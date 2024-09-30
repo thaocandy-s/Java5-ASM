@@ -1,0 +1,13 @@
+
+.pagination{
+    margin-top: 10px;
+    width: 100%;
+    text-align: center;
+
+}
+
+.pagination > * {
+    margin-right: 5px;
+    border: solid 1px;
+    border-radius: 10px;
+}
