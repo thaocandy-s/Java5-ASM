@@ -75,10 +75,10 @@ public class NhanVienController {
     public String them(NhanVien nhanVien, Model model, RedirectAttributes red) {
 
         ResponseObject<NhanVien> data;
-        if (nhanVien.getMa().equals("")
-                || nhanVien.getTen().equals("")
-                || nhanVien.getMatKhau().equals("")
-                || nhanVien.getTenDangNhap().equals("")
+        if (nhanVien.getMa().trim().isBlank()
+                || nhanVien.getTen().trim().isBlank()
+                || nhanVien.getMatKhau().trim().isBlank()
+                || nhanVien.getTenDangNhap().trim().isBlank()
         ) {
             data = new ResponseObject<NhanVien>(true, nhanVien, "Không được để trống các trường mã-tên-tên đăng nhập-mật khẩu");
             red.addFlashAttribute("rp", data);
@@ -101,6 +101,7 @@ public class NhanVienController {
 
         if (!model.containsAttribute("rp")) {
             ResponseObject<NhanVien> data = service.findById(id);
+            data.setMessage(null);
             model.addAttribute("rp", data);
         } else {
             model.addAttribute("rp", model.getAttribute("rp"));
@@ -110,12 +111,11 @@ public class NhanVienController {
 
     @PostMapping("/update")
     public String sua(NhanVien nhanVien, Model model, RedirectAttributes red) {
-        System.out.println(nhanVien);
         ResponseObject<NhanVien> data;
-        if (nhanVien.getMa().equals("")
-                || nhanVien.getTen().equals("")
-                || nhanVien.getMatKhau().equals("")
-                || nhanVien.getTenDangNhap().equals("")
+        if (nhanVien.getMa().trim().isBlank()
+                || nhanVien.getTen().trim().isBlank()
+                || nhanVien.getMatKhau().trim().isBlank()
+                || nhanVien.getTenDangNhap().trim().isBlank()
         ) {
             data = new ResponseObject<NhanVien>(true, nhanVien, "Không được để trống các trường mã-tên-tên đăng nhập-mật khẩu");
             red.addFlashAttribute("rp", data);
@@ -125,7 +125,6 @@ public class NhanVienController {
         red.addFlashAttribute("rp", data);
 
         if (data.isHasError) {
-            System.out.println(data.isHasError);
             return "redirect:" + MappingConstant.API_NHAN_VIEN + "/update/" + nhanVien.getId();
         }
         return "redirect:" + MappingConstant.API_NHAN_VIEN;

@@ -74,9 +74,9 @@ public class KhachHangController {
     @PostMapping("/add")
     public String them(KhachHang khachHang, Model model, RedirectAttributes red) {
         ResponseObject<KhachHang> data;
-        if (khachHang.getMa().equals("")
-                || khachHang.getTen().equals("")
-                || khachHang.getSoDienThoai().equals("")
+        if (khachHang.getMa().trim().isBlank()
+                || khachHang.getTen().trim().isBlank()
+                || khachHang.getSoDienThoai().trim().isBlank()
         ) {
             data = new ResponseObject<KhachHang>(true, khachHang, "Không được để trống các trường mã-tên-số điện thoại");
             red.addFlashAttribute("rp", data);
@@ -109,9 +109,9 @@ public class KhachHangController {
     public String sua(KhachHang khachHang, Model model, RedirectAttributes red) {
         System.out.println(khachHang);
         ResponseObject<KhachHang> data;
-        if (khachHang.getMa().equals("")
-                || khachHang.getTen().equals("")
-                || khachHang.getSoDienThoai().equals("")
+        if (khachHang.getMa().trim().isBlank()
+                || khachHang.getTen().trim().isBlank()
+                || khachHang.getSoDienThoai().trim().isBlank()
         ) {
             data = new ResponseObject<KhachHang>(true, khachHang, "Không được để trống các trường tên-số điện thoại");
             red.addFlashAttribute("rp", data);

@@ -4,68 +4,85 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Sửa sản phẩm chi tiết</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <%@ include file="/WEB-INF/views/sidebar.jsp" %>
-<div class="main-content" style="margin-left:200px; padding:20px;">
-    <c:if test="${rp.isHasError}" >
-        <div style="background: #fca4a9">
+
+<div class="container mt-4">
+    <h2 class="mb-4">Sửa sản phẩm chi tiết</h2>
+
+    <c:if test="${rp.isHasError}">
+        <div class="alert-danger">
                 ${rp.message}
         </div>
     </c:if>
 
     <form action="/san-pham-chi-tiet/update" method="post">
-        <input type="number" name="id" hidden value="${rp.data.id}"><br>
+        <input type="hidden" name="id" value="${rp.data.id}">
 
-        <div class="form-control">
-            Mã:<input type="text" name="ma" value="${rp.data.ma}"><br>
+        <div class="form-group">
+            <label for="ma">Mã sản phẩm chi tiết:</label>
+            <input type="text" id="ma" class="form-control" name="ma" value="${rp.data.ma}" readonly>
         </div>
-        <div class="form-control">
-            Sản phẩm:
-            <select value="${rp.data.idSanPham}" name="idSanPham">
-                <c:forEach items="${listSP}" var="o" varStatus="status">
-                    <option value="${o.id}" ${rp.data.idSanPham == o.id ? "selected": ""} >${o.ten}</option>
+
+        <div class="form-group">
+            <label for="idSanPham">Sản phẩm:</label>
+            <select id="idSanPham" class="form-control" name="idSanPham">
+                <c:forEach items="${listSP}" var="o">
+                    <option value="${o.id}" ${rp.data.idSanPham == o.id ? "selected" : ""}>${o.ten}</option>
                 </c:forEach>
-            </select><br>
+            </select>
         </div>
-        <div class="form-control">
-            Kích thước:
-            <select value="${rp.data.idKichThuoc}" name="idKichThuoc">
-                <c:forEach items="${listKT}" var="o" varStatus="status">
-                    <option value="${o.id}" ${rp.data.idKichThuoc == o.id ? "selected" : ""} >${o.ten}</option>
+
+        <div class="form-group">
+            <label for="idKichThuoc">Kích thước:</label>
+            <select id="idKichThuoc" class="form-control" name="idKichThuoc">
+                <c:forEach items="${listKT}" var="o">
+                    <option value="${o.id}" ${rp.data.idKichThuoc == o.id ? "selected" : ""}>${o.ten}</option>
                 </c:forEach>
-            </select><br>
+            </select>
         </div>
-        <div class="form-control">
-            Màu sắc:
-            <select value="${rp.data.idMauSac}" name="idMauSac">
-                <c:forEach items="${listMau}" var="o" varStatus="status">
-                    <option value="${o.id}" ${rp.data.idMauSac == o.id ? "selected": ""} >${o.ten}</option>
+
+        <div class="form-group">
+            <label for="idMauSac">Màu sắc:</label>
+            <select id="idMauSac" class="form-control" name="idMauSac">
+                <c:forEach items="${listMau}" var="o">
+                    <option value="${o.id}" ${rp.data.idMauSac == o.id ? "selected" : ""}>${o.ten}</option>
                 </c:forEach>
-            </select><br>
-        </div>
-        <div class="form-control">
-            Số lượng:<input type="number" name="soLuong" value="${rp.data.soLuong}"><br>
-        </div>
-        <div class="form-control">
-            Đơn giá:<input type="number" name="donGia" value="${rp.data.donGia}"><br>
+            </select>
         </div>
 
-
-        <div class="form-control">
-            Trạng thái hoạt động:
-            <input type="radio" name="trangThai" value="ACTIVE" checked ${rp.data.trangThai == 'ACTIVE' ? 'checked' : ''}> Có |
-            <input type="radio" name="trangThai" value="INACTIVE" ${rp.data.trangThai == 'INACTIVE' ? 'checked' : ''}> Không
+        <div class="form-group">
+            <label for="soLuong">Số lượng:</label>
+            <input type="number" id="soLuong" class="form-control" name="soLuong" value="${rp.data.soLuong}">
         </div>
 
-        <button type="submit">Sửa</button>
+        <div class="form-group">
+            <label for="donGia">Đơn giá:</label>
+            <input type="number" step="any" id="donGia" class="form-control" name="donGia" value="${rp.data.donGia}">
+        </div>
+
+        <div class="form-group">
+            <label>Trạng thái hoạt động:</label><br>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="active" name="trangThai" value="ACTIVE" ${rp.data.trangThai == 'ACTIVE' ? 'checked' : ''}>
+                <label class="form-check-label" for="active">Có</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="inactive" name="trangThai" value="INACTIVE" ${rp.data.trangThai == 'INACTIVE' ? 'checked' : ''}>
+                <label class="form-check-label" for="inactive">Không</label>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-success">Sửa</button>
     </form>
-
 </div>
 
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

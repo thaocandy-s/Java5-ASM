@@ -46,7 +46,6 @@ public class HoaDonChiTietService implements Service<HoaDonChiTiet> {
     @Override
     public ResponseObject<HoaDonChiTiet> add(HoaDonChiTiet e) {
         try {
-            System.out.println(e);
             if (e.getHoaDon() == null) {
                 return new ResponseObject<HoaDonChiTiet>(true, e, "Không có hóa đơn mã ");
             }
@@ -123,6 +122,10 @@ public class HoaDonChiTietService implements Service<HoaDonChiTiet> {
         } catch (Exception ex) {
             return new ResponseObject<String>(true, code, "Lỗi: " + ex.getMessage());
         }
+    }
+
+    public List<HoaDonChiTiet> getListByHoaDonId(){
+        return null;
     }
 }
 

@@ -8,36 +8,50 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Sửa sản phẩm</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <%@ include file="/WEB-INF/views/sidebar.jsp" %>
-<div class="main-content" style="margin-left:200px; padding:20px;">
-    <c:if test="${rp.isHasError}" >
-        <div style="background: #fca4a9">
+
+<div class="container mt-5">
+    <h2 class="mb-4">Sửa sản phẩm</h2>
+
+    <c:if test="${rp.isHasError}">
+        <div class="alert-danger">
                 ${rp.message}
         </div>
     </c:if>
 
     <form action="/san-pham/update" method="post">
-        <input type="number" name="id" hidden value="${rp.data.id}"><br>
+        <input type="hidden" name="id" value="${rp.data.id}">
 
-        <div class="form-control">
-            Mã:<input type="text" name="ma" value="${rp.data.ma}" readonly><br>
-        </div>
-        <div class="form-control">
-            Tên:<input type="text" name="ten" value="${rp.data.ten}"><br>
+        <div class="form-group">
+            <label for="ma">Mã:</label>
+            <input type="text" class="form-control" id="ma" name="ma" value="${rp.data.ma}" readonly>
         </div>
 
-        <div class="form-control">
-            Trạng thái hoạt động:
-            <input type="radio" name="trangThai" value="ACTIVE" ${rp.data.trangThai == 'ACTIVE' ? 'checked' : ''}> Có |
-            <input type="radio" name="trangThai" value="INACTIVE" ${rp.data.trangThai == 'INACTIVE' ? 'checked' : ''}> Không
+        <div class="form-group">
+            <label for="ten">Tên:</label>
+            <input type="text" class="form-control" id="ten" name="ten" value="${rp.data.ten}">
         </div>
 
-        <button type="submit">Sửa</button>
+        <div class="form-group">
+            <label>Trạng thái hoạt động:</label><br>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="active" name="trangThai" value="ACTIVE" ${rp.data.trangThai == 'ACTIVE' ? 'checked' : ''}>
+                <label class="form-check-label" for="active">Có</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="inactive" name="trangThai" value="INACTIVE" ${rp.data.trangThai == 'INACTIVE' ? 'checked' : ''}>
+                <label class="form-check-label" for="inactive">Không</label>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Sửa</button>
     </form>
-
 </div>
 
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

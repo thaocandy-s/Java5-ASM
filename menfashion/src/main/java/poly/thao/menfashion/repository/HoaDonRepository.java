@@ -14,12 +14,19 @@ public interface HoaDonRepository extends JpaRepository<HoaDon , Integer> {
     @Query("select hd from HoaDon hd where hd.trangThai != 2 order by hd.id desc ")
     List<HoaDon> findAll();
 
-    @Query("select sum(hdct.donGia) " +
+    @Query("select sum(hdct.donGia*hdct.soLuong) " +
             "from HoaDon hd " +
             "join HoaDonChiTiet hdct on hd.id = hdct.hoaDon.id " +
             "where hd.trangThai != 2 " +
             "group by hd.id " +
             "order by hd.id desc")
     List<Double> listTongGiaHoaDon();
+
+    @Query("select sum(hdct.donGia*hdct.soLuong) " +
+            "from HoaDon hd " +
+            "join HoaDonChiTiet hdct on hd.id = hdct.hoaDon.id " +
+            "where hd.trangThai != 2 and hd.id = ?1 " +
+            "group by hd.id ")
+    Double getTongGiaByHoaDonId(Integer id);
 
 }

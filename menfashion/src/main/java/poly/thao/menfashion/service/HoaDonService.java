@@ -51,6 +51,10 @@ public class HoaDonService implements Service<HoaDon> {
         return listHD;
     }
 
+    public Double getTongGia(Integer id){
+        return repository.getTongGiaByHoaDonId(id);
+    }
+
     @Override
     public ResponseObject<HoaDon> add(HoaDon e) {
         try {

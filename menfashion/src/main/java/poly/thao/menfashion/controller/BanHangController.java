@@ -125,7 +125,6 @@ public class BanHangController {
         Integer idKhachHang = Integer.parseInt(idKH);
         this.cart.setIdKhachHang(idKhachHang);
         this.cart.setIdNhanVien(currentUser().getId());
-        System.out.println(this.cart);
 
         model.addAttribute("ngayMuaHang", LocalDate.now());
         model.addAttribute("khachHang", khachHangService.findById(cart.idKhachHang).data);
