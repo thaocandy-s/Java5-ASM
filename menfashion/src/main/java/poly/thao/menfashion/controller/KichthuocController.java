@@ -74,8 +74,8 @@ public class KichthuocController {
     @PostMapping("/add")
     public String them(KichThuoc kichThuoc, Model model, RedirectAttributes red) {
         ResponseObject<KichThuoc> data;
-        if (kichThuoc.getMa().equals("")
-                || kichThuoc.getTen().equals("")
+        if (kichThuoc.getMa().trim().isBlank()
+                || kichThuoc.getTen().trim().isBlank()
         ) {
             data = new ResponseObject<KichThuoc>(true, kichThuoc, "Không được để trống các trường mã-tên");
             red.addFlashAttribute("rp", data);
@@ -108,8 +108,8 @@ public class KichthuocController {
     public String sua(KichThuoc kichThuoc, Model model, RedirectAttributes red) {
         System.out.println(kichThuoc);
         ResponseObject<KichThuoc> data;
-        if (kichThuoc.getMa().equals("")
-                || kichThuoc.getTen().equals("")
+        if (kichThuoc.getMa().trim().isBlank()
+                || kichThuoc.getTen().trim().isBlank()
         ) {
             data = new ResponseObject<KichThuoc>(true, kichThuoc, "Không được để trống các trường mã-tên");
             red.addFlashAttribute("rp", data);

@@ -74,8 +74,8 @@ public class SanPhamController {
     @PostMapping("/add")
     public String them(SanPham sanPham, Model model, RedirectAttributes red) {
         ResponseObject<SanPham> data;
-        if (sanPham.getMa().equals("")
-                || sanPham.getTen().equals("")
+        if (sanPham.getMa().trim().isBlank()
+                || sanPham.getTen().trim().isBlank()
         ) {
             data = new ResponseObject<SanPham>(true, sanPham, "Không được để trống các trường mã-tên");
             red.addFlashAttribute("rp", data);
@@ -108,8 +108,8 @@ public class SanPhamController {
     public String sua(SanPham sanPham, Model model, RedirectAttributes red) {
         System.out.println(sanPham);
         ResponseObject<SanPham> data;
-        if (sanPham.getMa().equals("")
-                || sanPham.getTen().equals("")
+        if (sanPham.getMa().trim().isBlank()
+                || sanPham.getTen().trim().isBlank()
         ) {
             data = new ResponseObject<SanPham>(true, sanPham, "Không được để trống các trường mã-tên");
             red.addFlashAttribute("rp", data);
@@ -119,7 +119,6 @@ public class SanPhamController {
         red.addFlashAttribute("rp", data);
 
         if (data.isHasError) {
-            System.out.println(data.isHasError);
             return "redirect:" + MappingConstant.API_SAN_PHAM + "/update/" + sanPham.getId();
         }
         return "redirect:" + MappingConstant.API_SAN_PHAM;

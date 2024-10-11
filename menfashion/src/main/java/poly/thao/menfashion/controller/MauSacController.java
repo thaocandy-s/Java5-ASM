@@ -73,8 +73,8 @@ public class MauSacController {
     @PostMapping("/add")
     public String them(MauSac mauSac, Model model, RedirectAttributes red) {
         ResponseObject<MauSac> data;
-        if (mauSac.getMa().equals("")
-                || mauSac.getTen().equals("")
+        if (mauSac.getMa().trim().isBlank()
+                || mauSac.getTen().trim().isBlank()
         ) {
             data = new ResponseObject<MauSac>(true, mauSac, "Không được để trống các trường mã-tên");
             red.addFlashAttribute("rp", data);
@@ -107,8 +107,8 @@ public class MauSacController {
     public String sua(MauSac mauSac, Model model, RedirectAttributes red) {
         System.out.println(mauSac);
         ResponseObject<MauSac> data;
-        if (mauSac.getMa().equals("")
-                || mauSac.getTen().equals("")
+        if (mauSac.getMa().trim().isBlank()
+                || mauSac.getTen().trim().isBlank()
         ) {
             data = new ResponseObject<MauSac>(true, mauSac, "Không được để trống các trường mã-tên");
             red.addFlashAttribute("rp", data);

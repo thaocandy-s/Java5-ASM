@@ -11,6 +11,7 @@ import poly.thao.menfashion.model.response.SanPhamChiTietDTO;
 import poly.thao.menfashion.model.response.ResponseObject;
 import poly.thao.menfashion.repository.SanPhamChiTietRepository;
 import poly.thao.menfashion.service.base.Service;
+import poly.thao.menfashion.utils.helper.Helper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,6 +81,14 @@ public class SanPhamChiTietService implements Service<SanPhamChiTiet> {
     @Override
     public ResponseObject<SanPhamChiTiet> add(SanPhamChiTiet e) {
         try {
+            if (e.getMa().trim().isBlank()
+            || e.getDonGia() == null
+            || e.getSoLuong() == null) {
+                return new ResponseObject<SanPhamChiTiet>(true, e, "Không được để trống các trường mã-đơn giá-số lượng");
+            }
+            if(Helper.isChuCoDau(e.getMa().trim())){
+                return new ResponseObject<SanPhamChiTiet>(true, e, "Mã chỉ chứa các chữ không dấu");
+            }
             boolean isExistMa = repository.existsByMa(e.getMa());
             if (isExistMa) {
                 return new ResponseObject<SanPhamChiTiet>(true, e, "Mã bị trùng");
@@ -105,8 +114,13 @@ public class SanPhamChiTietService implements Service<SanPhamChiTiet> {
     @Override
     public ResponseObject<SanPhamChiTiet> update(SanPhamChiTiet e) {
 
-        if (e.getMa().equals("")) {
-            return new ResponseObject<SanPhamChiTiet>(true, e, "Không được để trống trường mã ");
+        if (e.getMa().trim().isBlank()
+                || e.getDonGia() == null
+                || e.getSoLuong() == null) {
+            return new ResponseObject<SanPhamChiTiet>(true, e, "Không được để trống các trường mã-đơn giá-số lượng");
+        }
+        if(Helper.isChuCoDau(e.getMa().trim())){
+            return new ResponseObject<SanPhamChiTiet>(true, e, "Mã chỉ chứa các chữ không dấu");
         }
 
         boolean isExistMa = repository.existsByMa(e.getMa(), e.getId());
@@ -119,7 +133,7 @@ public class SanPhamChiTietService implements Service<SanPhamChiTiet> {
             return new ResponseObject<SanPhamChiTiet>(true, e, "Số lượng phải từ 0");
         }
 
-        boolean ckDonGia = e.getDonGia() > 0;
+        boolean ckDonGia = e.getDonGia() >= 0;
         if (!ckDonGia) {
             return new ResponseObject<SanPhamChiTiet>(true, e, "Đơn giá phải từ 0");
         }

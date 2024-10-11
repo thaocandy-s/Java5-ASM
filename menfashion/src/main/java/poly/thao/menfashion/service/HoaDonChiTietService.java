@@ -124,5 +124,9 @@ public class HoaDonChiTietService implements Service<HoaDonChiTiet> {
             return new ResponseObject<String>(true, code, "Lỗi: " + ex.getMessage());
         }
     }
+
+    public List<HoaDonChiTiet> getListByHoaDonId(){
+        return null;
+    }
 }
 
