@@ -6,6 +6,8 @@ SQL Server
 
 Các bước cần thiết:
 
+Checkout sang nhánh dev để chạy
+
 1. Đổi username và password của MSSQL trong application.properties
 2. Create database name: MEN_FASHION
 3. Chạy dự án lần 1 để spring boot tự tạo bảng
