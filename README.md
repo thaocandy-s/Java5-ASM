@@ -4,6 +4,7 @@ Spring boot
 
 SQL Server
 
+
 Các bước cần thiết:
 
 Checkout sang nhánh dev để chạy
@@ -14,3 +15,4 @@ Checkout sang nhánh dev để chạy
 4. Mở SSMS, chạy đoạn script Java5-AMS.sql (để đảm bảo tên được lưu có dấu)
 5. Tại SSMS, insert một bản ghi vào bảng nhan_vien với trường mã = **'admin01'** để đăng nhập là role admin
 6. Chạy lại dự án -> xong
+
