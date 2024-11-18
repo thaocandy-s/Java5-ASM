@@ -111,7 +111,6 @@ public class NhanVienController {
 
     @PostMapping("/update")
     public String sua(NhanVien nhanVien, Model model, RedirectAttributes red) {
-        System.out.println(nhanVien);
         ResponseObject<NhanVien> data;
         if (nhanVien.getMa().trim().isBlank()
                 || nhanVien.getTen().trim().isBlank()
@@ -126,7 +125,6 @@ public class NhanVienController {
         red.addFlashAttribute("rp", data);
 
         if (data.isHasError) {
-            System.out.println(data.isHasError);
             return "redirect:" + MappingConstant.API_NHAN_VIEN + "/update/" + nhanVien.getId();
         }
         return "redirect:" + MappingConstant.API_NHAN_VIEN;

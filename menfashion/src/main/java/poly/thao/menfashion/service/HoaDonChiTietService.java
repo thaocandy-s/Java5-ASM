@@ -46,15 +46,14 @@ public class HoaDonChiTietService implements Service<HoaDonChiTiet> {
     @Override
     public ResponseObject<HoaDonChiTiet> add(HoaDonChiTiet e) {
         try {
-            System.out.println(e);
             if (e.getHoaDon() == null) {
-                return new ResponseObject<HoaDonChiTiet>(true, e, "Không có hóa đơn mã ");
+                return new ResponseObject<HoaDonChiTiet>(true, e, "Không có hóa đơn");
             }
             if (e.getSanPhamChiTiet() == null) {
-                return new ResponseObject<HoaDonChiTiet>(true, e, "Không có SPCT mã");
+                return new ResponseObject<HoaDonChiTiet>(true, e, "Không có SPCT");
             }
-            if (e.getSoLuong() == null || e.getSoLuong() < 0) {
-                return new ResponseObject<HoaDonChiTiet>(true, e, "Số lượng phải > 0");
+            if (e.getSoLuong() == null || e.getSoLuong() < 0 || e.getSoLuong() > e.getSanPhamChiTiet().getSoLuong()) {
+                return new ResponseObject<HoaDonChiTiet>(true, e, "Số lượng phải > 0 và <= số lượng SPCT đã chọn");
             }
             this.repository.save(e);
             return new ResponseObject<HoaDonChiTiet>(false, e, "Thêm HD thành công");
@@ -67,14 +66,17 @@ public class HoaDonChiTietService implements Service<HoaDonChiTiet> {
     @Override
     public ResponseObject<HoaDonChiTiet> update(HoaDonChiTiet e) {
         try {
+            if (e.getId() == null) {
+                return new ResponseObject<>(true, e, "Không có Id HDCT hợp lệ");
+            }
             if (e.getHoaDon() == null) {
-                return new ResponseObject<HoaDonChiTiet>(true, e, "Không có hóa đơn mã ");
+                return new ResponseObject<HoaDonChiTiet>(true, e, "Không có hóa đơn");
             }
             if (e.getSanPhamChiTiet() == null) {
-                return new ResponseObject<HoaDonChiTiet>(true, e, "Không có SPCT mã");
+                return new ResponseObject<HoaDonChiTiet>(true, e, "Không có SPCT");
             }
-            if (e.getSoLuong() == null || e.getSoLuong() < 0) {
-                return new ResponseObject<HoaDonChiTiet>(true, e, "Số lượng phải > 0");
+            if (e.getSoLuong() == null || e.getSoLuong() < 0 || e.getSoLuong() > e.getSanPhamChiTiet().getSoLuong()) {
+                return new ResponseObject<HoaDonChiTiet>(true, e, "Số lượng phải > 0 và <= số lượng SPCT đã chọn");
             }
             this.repository.save(e);
             return new ResponseObject<HoaDonChiTiet>(false, e, "Sửa HD thành công");

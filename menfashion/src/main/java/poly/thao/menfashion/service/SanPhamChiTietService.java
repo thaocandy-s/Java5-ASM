@@ -222,5 +222,23 @@ public class SanPhamChiTietService implements Service<SanPhamChiTiet> {
         }
         return list1;
     }
+
+    public String validate(SanPhamChiTiet e){
+
+        String regexMa = "^SPCT\\d{3}$";
+
+        if(!e.getMa().matches(regexMa)){
+            return  "Mã sản phẩm 7 ký tự: SPCT+3 số bất kỳ";
+        }
+        // so luong 0 - 2000
+        if(e.getSoLuong() < 0 || e.getSoLuong() > 2000){
+            return  "Số lượng từ 0 - 2000";
+        }
+        // don gia 0 - 100000
+        if(e.getDonGia() < 0 || e.getDonGia() > 100000){
+            return  "Đơn giá từ 0 - 100000";
+        }
+        return null;
+    }
 }
 

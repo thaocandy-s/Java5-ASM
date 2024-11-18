@@ -1,6 +1,7 @@
 package poly.thao.menfashion.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import poly.thao.menfashion.entity.MauSac;
 import poly.thao.menfashion.entity.SanPham;
 import poly.thao.menfashion.model.EntityStatus;
 import poly.thao.menfashion.model.response.SanPhamDTO;
@@ -50,14 +51,14 @@ public class SanPhamService implements Service<SanPham> {
     @Override
     public ResponseObject<SanPham> add(SanPham e) {
         try {
+            String validate = validate(e);
+            if(validate != null){
+                return new ResponseObject<>(true, e, validate);
+            }
             boolean isExistMa = repository.existsByMa(e.getMa());
             if(isExistMa){
                 return new ResponseObject<SanPham>(true, e, "Mã bị trùng");
             }
-//            boolean isExistTen = repository.existsByTen(e.getTen());
-//            if(isExistTen){
-//                return new ResponseObject<SanPham>(true, e, "Tên bị trùng");
-//            }
             this.repository.save(e);
             return new ResponseObject<SanPham>(false, e, "Thêm SP thành công");
         } catch (Exception ex) {
@@ -67,15 +68,14 @@ public class SanPhamService implements Service<SanPham> {
 
     @Override
     public ResponseObject<SanPham> update(SanPham e) {
-
+        String validate = validate(e);
+        if(validate != null){
+            return new ResponseObject<>(true, e, validate);
+        }
         boolean isExistMa = repository.existsByMa(e.getMa(), e.getId());
         if(isExistMa){
             return new ResponseObject<SanPham>(true, e, "Mã bị trùng");
         }
-//        boolean isExistTen = repository.existsByTen(e.getTen(), e.getId());
-//        if(isExistTen){
-//            return new ResponseObject<SanPham>(true, e, "Tên đăng nhập bị trùng");
-//        }
         try {
             this.repository.save(e);
             return new ResponseObject<SanPham>(false, e, "Sửa SP thành công");
@@ -158,6 +158,20 @@ public class SanPhamService implements Service<SanPham> {
             }
         }
         return list1;
+    }
+
+    public String validate(SanPham e){
+
+        String regexMa = "^SP\\d{3}$";
+        String regexTen = "^[a-zA-ZÀ-ỹ\\s]{5,50}$";
+
+        if(!e.getMa().matches(regexMa)){
+            return  "Mã sản phẩm 5 ký tự: SP+3 số bất kỳ";
+        }
+        if(!e.getTen().matches(regexTen)){
+            return  "Tên sản phẩm cần 5-50 ký tự, không số và ký tự đặc biệt";
+        }
+        return null;
     }
 }
 

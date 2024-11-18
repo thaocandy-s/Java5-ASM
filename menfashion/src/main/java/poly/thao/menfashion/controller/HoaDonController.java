@@ -109,7 +109,6 @@ public class HoaDonController {
     @GetMapping("/chi-tiet/{id}")
     public String hienThiChiTietHoaDon(@PathVariable("id") Integer id, Model model){
         HoaDon hd = service.findById(id).data;
-        System.out.println(hd);
         List<HoaDonChiTiet> listHoaDonChiTiet = hoaDonChiTietService.repository.findAllByHoaDon_Id(id);
         HoaDonResponse hoaDonResponse = new HoaDonResponse(listHoaDonChiTiet, service.getTongGia(id));
 

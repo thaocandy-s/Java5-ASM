@@ -37,58 +37,66 @@ public class NhanVienService implements Service<NhanVien> {
     @Override
     public ResponseObject<List<NhanVien>> getList() {
 //        repository.saveAll(list);
-        return new ResponseObject<List<NhanVien>>(false, this.repository.findAll(), "Lấy danh sách NV thành công");
+        return new ResponseObject<>(false, this.repository.findAll(), "Lấy danh sách NV thành công");
     }
 
     @Override
     public ResponseObject<NhanVien> add(NhanVien e) {
         try {
+            String validate = validate(e);
+            if(validate != null){
+                return new ResponseObject<>(true, e, validate);
+            }
             boolean isExistMa = repository.existsByMa(e.getMa());
             if (isExistMa) {
-                return new ResponseObject<NhanVien>(true, e, "Mã bị trùng");
+                return new ResponseObject<>(true, e, "Mã bị trùng");
             }
             boolean isExistTdn = repository.existsByTenDangNhap(e.getTenDangNhap());
             if (isExistTdn) {
-                return new ResponseObject<NhanVien>(true, e, "Tên đăng nhập bị trùng");
+                return new ResponseObject<>(true, e, "Tên đăng nhập bị trùng");
             }
             this.repository.save(e);
-            return new ResponseObject<NhanVien>(false, e, "Thêm NV thành công");
+            return new ResponseObject<>(false, e, "Thêm NV thành công");
         } catch (Exception ex) {
-            return new ResponseObject<NhanVien>(true, e, "Thêm NV thất bại: " + ex.getMessage());
+            return new ResponseObject<>(true, e, "Thêm NV thất bại: " + ex.getMessage());
         }
     }
 
     @Override
     public ResponseObject<NhanVien> update(NhanVien e) {
 
+        String validate = validate(e);
+        if(validate != null){
+            return new ResponseObject<>(true, e, validate);
+        }
         boolean isExistMa = repository.existsByMa(e.getMa(), e.getId());
         if (isExistMa) {
-            return new ResponseObject<NhanVien>(true, e, "Mã bị trùng");
+            return new ResponseObject<>(true, e, "Mã bị trùng");
         }
         boolean isExistTdn = repository.existsByTenDangNhap(e.getTenDangNhap(), e.getId());
         if (isExistTdn) {
-            return new ResponseObject<NhanVien>(true, e, "Tên đăng nhập bị trùng");
+            return new ResponseObject<>(true, e, "Tên đăng nhập bị trùng");
         }
         try {
             this.repository.save(e);
-            return new ResponseObject<NhanVien>(false, e, "Sửa NV thành công");
+            return new ResponseObject<>(false, e, "Sửa NV thành công");
         } catch (Exception ex) {
-            return new ResponseObject<NhanVien>(true, e, "Sửa NV thất bại: " + ex.getMessage());
+            return new ResponseObject<>(true, e, "Sửa NV thất bại: " + ex.getMessage());
         }
     }
 
     @Override
     public ResponseObject<NhanVien> findById(Integer id) {
         try {
-            System.out.println("Nhan vien: " + id);
+
             boolean isExists = this.repository.existsById(id);
             if (isExists) {
-                return new ResponseObject<NhanVien>(false, this.repository.findById(id).get(), "Lấy data NV thành công");
+                return new ResponseObject<>(false, this.repository.findById(id).get(), "Lấy data NV thành công");
             } else {
-                return new ResponseObject<NhanVien>(true, null, "NV không tồn tại");
+                return new ResponseObject<>(true, null, "NV không tồn tại");
             }
         } catch (Exception ex) {
-            return new ResponseObject<NhanVien>(true, null, "Lỗi: " + ex.getMessage());
+            return new ResponseObject<>(true, null, "Lỗi: " + ex.getMessage());
         }
     }
 
@@ -97,12 +105,12 @@ public class NhanVienService implements Service<NhanVien> {
         try {
             for (NhanVien o : this.repository.findAll()) {
                 if (o.getMa().equals(code)) {
-                    return new ResponseObject<NhanVien>(false, o, "Lấy data NV thành công");
+                    return new ResponseObject<>(false, o, "Lấy data NV thành công");
                 }
             }
-            return new ResponseObject<NhanVien>(true, null, "NV không tồn tại");
+            return new ResponseObject<>(true, null, "NV không tồn tại");
         } catch (Exception ex) {
-            return new ResponseObject<NhanVien>(true, null, "Lỗi: " + ex.getMessage());
+            return new ResponseObject<>(true, null, "Lỗi: " + ex.getMessage());
         }
     }
 
@@ -111,14 +119,14 @@ public class NhanVienService implements Service<NhanVien> {
         try {
             ResponseObject<NhanVien> find = this.findById(id);
             if (find.isHasError) {
-                return new ResponseObject<Integer>(true, id, find.getMessage());
+                return new ResponseObject<>(true, id, find.getMessage());
             } else {
                 find.data.setTrangThai(EntityStatus.DELETED);
                 this.repository.save(find.data);
-                return new ResponseObject<Integer>(false, id, "Xóa thành công");
+                return new ResponseObject<>(false, id, "Xóa thành công");
             }
         } catch (Exception ex) {
-            return new ResponseObject<Integer>(true, id, "Lỗi: " + ex.getMessage());
+            return new ResponseObject<>(true, id, "Lỗi: " + ex.getMessage());
         }
     }
 
@@ -127,28 +135,15 @@ public class NhanVienService implements Service<NhanVien> {
         try {
             ResponseObject<NhanVien> find = this.findByCode(code);
             if (find.isHasError) {
-                return new ResponseObject<String>(true, code, find.getMessage());
+                return new ResponseObject<>(true, code, find.getMessage());
             } else {
                 find.data.setTrangThai(EntityStatus.DELETED);
                 this.repository.save(find.data);
-                return new ResponseObject<String>(false, code, "Xóa thành công");
+                return new ResponseObject<>(false, code, "Xóa thành công");
             }
         } catch (Exception ex) {
-            return new ResponseObject<String>(true, code, "Lỗi: " + ex.getMessage());
+            return new ResponseObject<>(true, code, "Lỗi: " + ex.getMessage());
         }
-    }
-
-    public ResponseObject<NhanVien> login(LoginReq loginReq) {
-        Optional<NhanVien> opUser = repository.findByTenDangNhapAndMatKhau(loginReq);
-        NhanVien nv = opUser.orElse(null);
-
-        ResponseObject<NhanVien> currentUser;
-        if (nv == null) {
-            currentUser = new ResponseObject<NhanVien>(true, null, "Tài khoản không hợp lệ");
-        } else {
-            currentUser = new ResponseObject<NhanVien>(false, nv, "Login thành công");
-        }
-        return currentUser;
     }
 
     public List<NhanVien> search(List<NhanVien> list, String key) {
@@ -163,5 +158,31 @@ public class NhanVienService implements Service<NhanVien> {
             }
         }
         return list1;
+    }
+
+    public String validate(NhanVien e){
+//        String regexMa = "ssss"; // NV + 3 so nguyen bat ky
+//        String regexTen = "ssss"; // 10 ~ 50 ky tu, không so va ky tu dac biet
+//        String regexTenDangNhap = "ssss"; // 10 ~ 30 ky tu, ít nhất 1 chữ hoa và 1 ký tự đặc biệt
+//        String regexMatKhau = "ssss"; // 5 ~ 10 ky tu; co so va ky tu dac biet
+
+        String regexMa = "^NV\\d{3}$";
+        String regexTen = "^[a-zA-ZÀ-ỹ\\s]{10,50}$";
+        String regexTenDangNhap = "^(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{10,30}$";
+        String regexMatKhau = "^(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{5,10}$";
+
+        if(!e.getMa().matches(regexMa)){
+            return  "Mã nhân viên cần 5 ký tự: NV+3 số bất kỳ";
+        }
+        if(!e.getTen().matches(regexTen)){
+            return  "Tên nhân viên cần 10-50 ký tự, không số và ký tự đặc biệt";
+        }
+        if(!e.getTenDangNhap().matches(regexTenDangNhap)){
+            return  "Tên đăng nhập cần 8-30 ký tự, phải có ít nhất 1 chữ hoa và 1 ký tự đặc biệt";
+        }
+        if(!e.getMatKhau().matches(regexMatKhau)){
+            return  "Mật khẩu cần 5-10 ký tự, phải có ít nhất 1 số và 1 ký tự đặc biệt";
+        }
+        return null;
     }
 }
