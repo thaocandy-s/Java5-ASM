@@ -2,6 +2,7 @@ package poly.thao.menfashion.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import poly.thao.menfashion.entity.HoaDon;
+import poly.thao.menfashion.entity.HoaDonChiTiet;
 import poly.thao.menfashion.model.EntityStatus;
 import poly.thao.menfashion.model.response.ResponseObject;
 import poly.thao.menfashion.repository.HoaDonRepository;
@@ -75,6 +76,9 @@ public class HoaDonService implements Service<HoaDon> {
     @Override
     public ResponseObject<HoaDon> update(HoaDon e) {
         try {
+            if (e.getId() == null) {
+                return new ResponseObject<>(true, e, "Không có Id HD hợp lệ");
+            }
             if (e.getKhachHang() == null) {
                 return new ResponseObject<HoaDon>(true, e, "Khách hàng không hợp lệ");
             }

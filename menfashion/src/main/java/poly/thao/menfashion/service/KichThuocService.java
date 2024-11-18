@@ -2,7 +2,6 @@ package poly.thao.menfashion.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import poly.thao.menfashion.entity.KichThuoc;
-import poly.thao.menfashion.entity.MauSac;
 import poly.thao.menfashion.model.EntityStatus;
 import poly.thao.menfashion.model.response.ResponseObject;
 import poly.thao.menfashion.repository.KichThuocRepository;
@@ -53,14 +52,14 @@ public class KichThuocService implements Service<KichThuoc> {
     @Override
     public ResponseObject<KichThuoc> add(KichThuoc e) {
         try {
+            String validate = validate(e);
+            if(validate != null){
+                return new ResponseObject<>(true, e, validate);
+            }
             boolean isExistMa = repository.existsByMa(e.getMa());
             if(isExistMa){
                 return new ResponseObject<KichThuoc>(true, e, "Mã bị trùng");
             }
-//            boolean isExistTen = repository.existsByTen(e.getTen());
-//            if(isExistTen){
-//                return new ResponseObject<KichThuoc>(true, e, "Tên bị trùng");
-//            }
             this.repository.save(e);
             return new ResponseObject<KichThuoc>(false, e, "Thêm KT thành công");
         } catch (Exception ex) {
@@ -70,15 +69,14 @@ public class KichThuocService implements Service<KichThuoc> {
 
     @Override
     public ResponseObject<KichThuoc> update(KichThuoc e) {
-
+        String validate = validate(e);
+        if(validate != null){
+            return new ResponseObject<>(true, e, validate);
+        }
         boolean isExistMa = repository.existsByMa(e.getMa(), e.getId());
         if(isExistMa){
             return new ResponseObject<KichThuoc>(true, e, "Mã bị trùng");
         }
-//        boolean isExistTen = repository.existsByTen(e.getTen(), e.getId());
-//        if(isExistTen){
-//            return new ResponseObject<KichThuoc>(true, e, "Tên đăng nhập bị trùng");
-//        }
         try {
             this.repository.save(e);
             return new ResponseObject<KichThuoc>(false, e, "Sửa KT thành công");
@@ -145,6 +143,20 @@ public class KichThuocService implements Service<KichThuoc> {
         } catch (Exception ex) {
             return new ResponseObject<String>(true, code, "Lỗi: " + ex.getMessage());
         }
+    }
+
+    public String validate(KichThuoc e){
+
+        String regexMa = "^KT\\d{3}$";
+        String regexTen = "^[a-zA-ZÀ-ỹ\\s]{3,30}$";
+
+        if(!e.getMa().matches(regexMa)){
+            return  "Mã kích thước cần 5 ký tự: KT+3 số bất kỳ";
+        }
+        if(!e.getTen().matches(regexTen)){
+            return  "Tên kích thước cần 3-30 ký tự, không số và ký tự đặc biệt";
+        }
+        return null;
     }
 }
 

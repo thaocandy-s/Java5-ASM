@@ -42,14 +42,14 @@ public class MauSacService implements Service<MauSac> {
     @Override
     public ResponseObject<MauSac> add(MauSac e) {
         try {
+            String validate = validate(e);
+            if(validate != null){
+                return new ResponseObject<>(true, e, validate);
+            }
             boolean isExistMa = repository.existsByMa(e.getMa());
             if(isExistMa){
                 return new ResponseObject<MauSac>(true, e, "Mã bị trùng");
             }
-//            boolean isExistTen = repository.existsByTen(e.getTen());
-//            if(isExistTen){
-//                return new ResponseObject<MauSac>(true, e, "Tên bị trùng");
-//            }
             this.repository.save(e);
             return new ResponseObject<MauSac>(false, e, "Thêm MS thành công");
         } catch (Exception ex) {
@@ -59,15 +59,14 @@ public class MauSacService implements Service<MauSac> {
 
     @Override
     public ResponseObject<MauSac> update(MauSac e) {
-
+        String validate = validate(e);
+        if(validate != null){
+            return new ResponseObject<>(true, e, validate);
+        }
         boolean isExistMa = repository.existsByMa(e.getMa(), e.getId());
         if(isExistMa){
             return new ResponseObject<MauSac>(true, e, "Mã bị trùng");
         }
-//        boolean isExistTen = repository.existsByTen(e.getTen(), e.getId());
-//        if(isExistTen){
-//            return new ResponseObject<MauSac>(true, e, "Tên đăng nhập bị trùng");
-//        }
         try {
             this.repository.save(e);
             return new ResponseObject<MauSac>(false, e, "Sửa MS thành công");
@@ -145,6 +144,20 @@ public class MauSacService implements Service<MauSac> {
             }
         }
         return listMS;
+    }
+
+    public String validate(MauSac e){
+
+        String regexMa = "^MS\\d{3}$";
+        String regexTen = "^[a-zA-ZÀ-ỹ\\s]{3,30}$";
+
+        if(!e.getMa().matches(regexMa)){
+            return  "Mã màu sắc cần 5 ký tự: MS+3 số bất kỳ";
+        }
+        if(!e.getTen().matches(regexTen)){
+            return  "Tên màu sắc cần 3-30 ký tự, không số và ký tự đặc biệt";
+        }
+        return null;
     }
 }
 

@@ -14,6 +14,7 @@ import poly.thao.menfashion.entity.NhanVien;
 import poly.thao.menfashion.model.request.LoginReq;
 import poly.thao.menfashion.model.response.ResponseObject;
 import poly.thao.menfashion.service.AppService;
+import poly.thao.menfashion.service.LoginService;
 import poly.thao.menfashion.service.NhanVienService;
 
 import java.util.List;
@@ -28,7 +29,7 @@ import java.util.List;
 public class LoginController {
 
     @Autowired
-    private NhanVienService nhanVienService;
+    private LoginService loginService;
 
 
     @GetMapping("")
@@ -43,7 +44,7 @@ public class LoginController {
             model.addAttribute("loginReq", loginReq);
             return "login";
         }
-        ResponseObject<NhanVien> currentUser = nhanVienService.login(loginReq);
+        ResponseObject<NhanVien> currentUser = loginService.login(loginReq);
         if(currentUser.isHasError){
             red.addFlashAttribute("rp", currentUser);
             red.addFlashAttribute("loginReq", loginReq);

@@ -2,6 +2,7 @@ package poly.thao.menfashion.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import poly.thao.menfashion.entity.KhachHang;
+import poly.thao.menfashion.entity.KichThuoc;
 import poly.thao.menfashion.entity.SanPham;
 import poly.thao.menfashion.model.EntityStatus;
 import poly.thao.menfashion.model.response.ResponseObject;
@@ -43,6 +44,10 @@ public class KhachHangService implements Service<KhachHang> {
     @Override
     public ResponseObject<KhachHang> add(KhachHang e) {
         try {
+            String validate = validate(e);
+            if(validate != null){
+                return new ResponseObject<>(true, e, validate);
+            }
             boolean isExistMa = repository.existsByMa(e.getMa());
             if(isExistMa){
                 return new ResponseObject<KhachHang>(true, e, "Mã bị trùng");
@@ -60,7 +65,10 @@ public class KhachHangService implements Service<KhachHang> {
 
     @Override
     public ResponseObject<KhachHang> update(KhachHang e) {
-
+        String validate = validate(e);
+        if(validate != null){
+            return new ResponseObject<>(true, e, validate);
+        }
         boolean isExistMa = repository.existsByMa(e.getMa(), e.getId());
         if(isExistMa){
             return new ResponseObject<KhachHang>(true, e, "Mã bị trùng");
@@ -150,5 +158,23 @@ public class KhachHangService implements Service<KhachHang> {
             }
         }
         return list1;
+    }
+
+    public String validate(KhachHang e){
+
+        String regexMa = "^KH\\d{3}$";
+        String regexTen = "^[a-zA-ZÀ-ỹ\\s]{5,50}$";
+        String regexSoDienThoai = "^0\\d{9,12}$";
+
+        if(!e.getMa().matches(regexMa)){
+            return  "Mã kích thước cần 5 ký tự: KH+3 số bất kỳ";
+        }
+        if(!e.getTen().matches(regexTen)){
+            return  "Tên kích thước cần 3-30 ký tự, không số và ký tự đặc biệt";
+        }
+        if(!e.getSoDienThoai().matches(regexSoDienThoai)){
+            return  "Số điện thoại khách hàng cần 10-13 chữ số, số 0 ở đầu";
+        }
+        return null;
     }
 }
