@@ -14,7 +14,6 @@
         </svg>
         Bán hàng
     </a>
-
     <a href="${pageContext.request.contextPath}/san-pham">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-seam"
              viewBox="0 0 16 16">
@@ -22,7 +21,6 @@
         </svg>
         Sản phẩm
     </a>
-
     <a href="${pageContext.request.contextPath}/san-pham-chi-tiet">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-list"
              viewBox="0 0 16 16">
@@ -31,7 +29,6 @@
         </svg>
         Sản phẩm chi tiết
     </a>
-
     <a href="${pageContext.request.contextPath}/mau-sac">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-palette"
              viewBox="0 0 16 16">
@@ -39,7 +36,6 @@
         </svg>
         Màu sắc
     </a>
-
     <a href="${pageContext.request.contextPath}/kich-thuoc">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-rulers"
              viewBox="0 0 16 16">
@@ -47,7 +43,6 @@
         </svg>
         Kích thước
     </a>
-
     <a href="${pageContext.request.contextPath}/khach-hang">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person"
              viewBox="0 0 16 16">
@@ -65,7 +60,6 @@
             </svg>
             Nhân viên
         </a>
-
         <a href="${pageContext.request.contextPath}/hoa-don">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-receipt"
                  viewBox="0 0 16 16">
