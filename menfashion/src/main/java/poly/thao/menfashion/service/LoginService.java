@@ -36,7 +36,7 @@ public class LoginService {
 
     public String validate(LoginReq e){
 
-        String regexTenDangNhap = "^(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{10,30}$";
+        String regexTenDangNhap = "^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?\":{}|<>])[A-Za-z\\d!@#$%^&*(),.?\":{}|<>]{8,30}$";
         String regexMatKhau = "^(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{5,10}$";
 
         if(!e.getUsername().matches(regexTenDangNhap)){
