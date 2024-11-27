@@ -143,48 +143,10 @@ public class BanHangController {
             return "redirect:/loi";
         }
 
-        ResponseObject<String> pay = this.pay(this.cart);
+        ResponseObject<String> pay = service.pay(this.cart);
         this.cart = new Cart(currentUser().getId(), null, new HashMap<>());
         red.addFlashAttribute("paid", pay);
         return "redirect:/ban-hang";
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    public ResponseObject<String> pay(Cart cart) {
-        try {
-            NhanVien nv = AppService.currentUser;
-            KhachHang kh = khachHangService.findById(cart.idKhachHang).data;
-
-            HoaDon hoaDon = new HoaDon();
-            hoaDon.setNhanVien(nv);
-            hoaDon.setKhachHang(kh);
-            hoaDon.setTrangThai(EntityStatus.ACTIVE);
-            ResponseObject<HoaDon> savedHoadon = hoaDonService.add(hoaDon);
-            if (savedHoadon.isHasError) {
-                throw new RuntimeException(savedHoadon.message);
-            }
-
-            for (Map.Entry<Integer, Integer> sp : cart.mapSanPham.entrySet()) {
-                HoaDonChiTiet hoaDonChiTiet = new HoaDonChiTiet();
-                hoaDonChiTiet.setHoaDon(savedHoadon.data);
-                SanPhamChiTiet spct = sanPhamChiTietService.findById(sp.getKey()).data;
-                hoaDonChiTiet.setSanPhamChiTiet(spct);
-                hoaDonChiTiet.setDonGia(spct.getDonGia());
-                hoaDonChiTiet.setSoLuong(sp.getValue());
-                hoaDonChiTiet.setTrangThai(EntityStatus.ACTIVE);
-                ResponseObject<HoaDonChiTiet> savedHDCT = hoaDonChiTietService.add(hoaDonChiTiet);
-
-                if (savedHDCT.isHasError) {
-                    throw new RuntimeException(savedHDCT.message);
-                }
-                spct.setSoLuong(spct.getSoLuong() - sp.getValue());
-                sanPhamChiTietService.update(spct);
-            }
-
-            return new ResponseObject<>(false, null, "Thanh toán thành công.");
-        } catch (Exception ex) {
-            return new ResponseObject<>(true, null, "Lỗi: " + ex.getMessage());
-        }
     }
 
 }
