@@ -33,4 +33,9 @@ public class KhachHang extends PrimaryEntity implements Serializable {
         this.soDienThoai = soDienThoai;
     }
 
+    public KhachHang(int id, String ten, String sdt) {
+        this.setId(id);
+        this.ten = ten;
+        this.soDienThoai = sdt;
+    }
 }

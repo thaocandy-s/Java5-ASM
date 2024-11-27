@@ -5,6 +5,7 @@ import poly.thao.menfashion.entity.HoaDon;
 import poly.thao.menfashion.entity.HoaDonChiTiet;
 import poly.thao.menfashion.model.EntityStatus;
 import poly.thao.menfashion.model.response.ResponseObject;
+import poly.thao.menfashion.repository.HoaDonChiTietRepository;
 import poly.thao.menfashion.repository.HoaDonRepository;
 import poly.thao.menfashion.service.base.Service;
 
@@ -18,12 +19,23 @@ public class HoaDonService implements Service<HoaDon> {
 
     @Autowired
     public HoaDonRepository repository;
+
+    @Autowired
+    public HoaDonChiTietRepository hoaDonChiTietRepository;
+
     private List<HoaDon> list;
 
     public HoaDonService() {
         this.list = new ArrayList<>();
     }
 
+    public boolean isExistById(Integer id){
+        return repository.existsById(id);
+    }
+
+    public List<HoaDonChiTiet> getListHDCTByHoaDonId(Integer id){
+        return hoaDonChiTietRepository.findAllByHoaDon_Id(id);
+    }
 
     @Override
     public ResponseObject<List<HoaDon>> getList() {

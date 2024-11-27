@@ -49,4 +49,9 @@ public class SanPhamChiTiet extends PrimaryEntity implements Serializable {
         this.soLuong = soLuong;
         this.donGia = donGia;
     }
+
+    public SanPhamChiTiet(int id, int soLuong) {
+        this.setId(id);
+        this.soLuong = soLuong;
+    }
 }

@@ -19,7 +19,7 @@ public class LoginService {
 
     public ResponseObject<NhanVien> login(LoginReq loginReq) {
         String validate = validate(loginReq);
-        if(validate != null){
+        if (validate != null) {
             return new ResponseObject<>(true, null, validate);
         }
         Optional<NhanVien> opUser = nhanVienRepository.findByTenDangNhapAndMatKhau(loginReq);
@@ -34,16 +34,20 @@ public class LoginService {
         return currentUser;
     }
 
-    public String validate(LoginReq e){
+    public String validate(LoginReq e) {
 
-        String regexTenDangNhap = "^(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{10,30}$";
+        String regexTenDangNhap = "^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?\":{}|<>])[A-Za-z\\d!@#$%^&*(),.?\":{}|<>]{8,30}$";
         String regexMatKhau = "^(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{5,10}$";
 
-        if(!e.getUsername().matches(regexTenDangNhap)){
-            return  "Tên đăng nhập cần 8-30 ký tự, phải có ít nhất 1 chữ hoa và 1 ký tự đặc biệt";
+        if (e.getUsername() == null || e.getPassword() == null) {
+            return "Error: Tên đăng nhập & mật khẩu không is NULL";
         }
-        if(!e.getPassword().matches(regexMatKhau)){
-            return  "Mật khẩu cần 5-10 ký tự, phải có ít nhất 1 số và 1 ký tự đặc biệt";
+
+        if (!e.getUsername().matches(regexTenDangNhap)) {
+            return "Tên đăng nhập cần 8-30 ký tự, phải có ít nhất 1 chữ hoa và 1 ký tự đặc biệt";
+        }
+        if (!e.getPassword().matches(regexMatKhau)) {
+            return "Mật khẩu cần 5-10 ký tự, phải có ít nhất 1 số và 1 ký tự đặc biệt";
         }
         return null;
     }

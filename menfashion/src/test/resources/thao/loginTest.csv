@@ -1,0 +1,11 @@
+username,password,expectMess
+Thaocandy@,a123@,false,Login thành công
+Thaocandy@,a1234@,true,Tài khoản không hợp lệ
+,a123@,true,"Error: Tên đăng nhập & mật khẩu không is NULL"
+Thaoca@,a123@,true,"Tên đăng nhập cần 8-30 ký tự, phải có ít nhất 1 chữ hoa và 1 ký tự đặc biệt"
+Thaocandy@Thaocandy@Thaocandy@T,a123@,true,"Tên đăng nhập cần 8-30 ký tự, phải có ít nhất 1 chữ hoa và 1 ký tự đặc biệt"
+thaocandy@,a123@,true,"Tên đăng nhập cần 8-30 ký tự, phải có ít nhất 1 chữ hoa và 1 ký tự đặc biệt"
+Thaocandy@,,true,"Error: Tên đăng nhập & mật khẩu không is NULL"
+Thaocandy@,a12@,true,"Mật khẩu cần 5-10 ký tự, phải có ít nhất 1 số và 1 ký tự đặc biệt"
+Thaocandy@,abcde12345@,true,"Mật khẩu cần 5-10 ký tự, phải có ít nhất 1 số và 1 ký tự đặc biệt"
+Thaocandy@,abcd$,true,"Mật khẩu cần 5-10 ký tự, phải có ít nhất 1 số và 1 ký tự đặc biệt"

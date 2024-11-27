@@ -24,8 +24,11 @@ public class HoaDonResponse {
 
     private List<HoaDonChiTiet> listHDCT;
 
-    public HoaDonResponse(List<HoaDonChiTiet> listHDCT, Double tongGia) {
+    public HoaDonResponse(List<HoaDonChiTiet> listHDCT, Double tongGia){
         this.listHDCT = listHDCT;
+        if (listHDCT == null || listHDCT.isEmpty()) {
+            throw new IllegalArgumentException("HoaDonChiTiet list is empty");
+        }
         this.hoaDon = listHDCT.get(0).hoaDon;
         this.tongGia = tongGia;
     }

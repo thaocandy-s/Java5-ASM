@@ -133,7 +133,7 @@
                                        <c:if test="${not empty cart.mapSanPham[o.id]}">checked</c:if>>
                             </td>
                             <td>
-                                <input width="50px" type="number" min="0" max="${o.soLuong}" name="soLuongs[${o.id}]"
+                                <input width="50px" type="number" name="soLuongs[${o.id}]"
                                        value="${not empty cart.mapSanPham[o.id] ? cart.mapSanPham[o.id] : 0}">
                             </td>
                         </tr>

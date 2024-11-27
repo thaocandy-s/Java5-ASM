@@ -31,6 +31,9 @@ public class BanHangService {
     @Autowired
     private HoaDonChiTietService hoaDonChiTietService;
 
+    @Autowired
+    private NhanVienService nhanVienService;
+
     public Double getAmount(Map<SanPhamChiTiet, Integer> mapSP){
         Double amount = 0D;
         for (Map.Entry<SanPhamChiTiet, Integer> entry: mapSP.entrySet()){
@@ -43,6 +46,32 @@ public class BanHangService {
     @Transactional(rollbackFor = Exception.class)
     public ResponseObject<String> pay(Cart cart) {
         try {
+
+            if (cart.idKhachHang == null){
+                throw new RuntimeException("idKhachHang must not null");
+            }
+            if (cart.idKhachHang <= 0){
+                throw new RuntimeException("invalid idKhachHang");
+            }
+            if (khachHangService.findById(cart.idKhachHang).isHasError){
+                throw new RuntimeException("khachHang not found");
+            }
+            if (cart.idNhanVien == null){
+                throw new RuntimeException("idNhanVien must not null");
+            }
+            if (cart.idNhanVien <= 0){
+                throw new RuntimeException("invalid idNhanVien");
+            }
+            if (nhanVienService.findById(cart.idNhanVien).isHasError){
+                throw new RuntimeException("nhanVien not found");
+            }
+            if (cart.mapSanPham == null){
+                throw new RuntimeException("SanPhams must not null");
+            }
+            if (cart.mapSanPham.isEmpty()){
+                throw new RuntimeException("SanPhams must not empty");
+            }
+
             NhanVien nv = AppService.currentUser;
             KhachHang kh = khachHangService.findById(cart.idKhachHang).data;
 

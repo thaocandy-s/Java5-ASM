@@ -18,6 +18,7 @@ import poly.thao.menfashion.entity.SanPhamChiTiet;
 import poly.thao.menfashion.model.EntityStatus;
 import poly.thao.menfashion.model.request.Cart;
 import poly.thao.menfashion.model.response.ResponseObject;
+import poly.thao.menfashion.model.response.ValidationResult;
 import poly.thao.menfashion.service.AppService;
 import poly.thao.menfashion.service.BanHangService;
 import poly.thao.menfashion.service.HoaDonChiTietService;
@@ -82,50 +83,84 @@ public class BanHangController {
 
     @PostMapping("/pay/confirm")
     public String payConfirm(
-            @RequestParam(value = "sanPhamsInCart",required = false) String[] selectedSP,
+            @RequestParam(value = "sanPhamsInCart", required = false) String[] selectedSP,
             @RequestParam Map<String, String> allParams,
             Model model, RedirectAttributes red) {
 
         if (currentUser() == null) {
             return "redirect:/loi";
         }
+        try {
+            ValidationResult validationResult = validatePayConfirm(selectedSP, allParams, cart, sanPhamChiTietService);
+            if (!validationResult.isValid()) {
+                return handleError(red, cart, validationResult.getMessage(), validationResult.getRedirectUrl());
+            }
+            updateCart(selectedSP, allParams);
+            String idKH = allParams.get("idKhachHang");
+            this.cart.setIdKhachHang(Integer.parseInt(idKH));
+            this.cart.setIdNhanVien(currentUser().getId());
+            prepareModelForView(model);
 
-        if(selectedSP == null || selectedSP.length == 0){
-            red.addFlashAttribute("cart",cart);
-            red.addFlashAttribute("mess", "Vui lòng chọn sản phẩm!");
-            return "redirect:/ban-hang";
+            return "banhang/pay";
+        } catch (Exception ex) {
+            return handleError(red, cart, "Đã có lỗi xảy ra, vui lòng chọn lại thông tin hóa đơn", "redirect:/ban-hang");
         }
+    }
 
+    public ValidationResult validatePayConfirm(
+            String[] selectedSP, Map<String, String> allParams, Cart cart, SanPhamChiTietService sanPhamChiTietService) {
+        if (selectedSP == null || selectedSP.length == 0) {
+            return new ValidationResult(false, "redirect:/ban-hang", "Vui lòng chọn sản phẩm!");
+        }
+        for (String productId : selectedSP) {
+            int id = Integer.parseInt(productId);
+            String sl = allParams.get("soLuongs[" + id + "]");
+            if (sl == null) {
+                return new ValidationResult(false, "redirect:/ban-hang", "Số lượng must not null!");
+            }
+            try {
+                int quantity = sl.isBlank() ? 0 : Integer.parseInt(sl);
+                SanPhamChiTiet spct = sanPhamChiTietService.findById(id).data;
+
+                if (spct == null) {
+                    return new ValidationResult(false, "redirect:/ban-hang", "SPCT not found!");
+                }
+                if (quantity < 0 || quantity > spct.getSoLuong()) {
+                    return new ValidationResult(false, "redirect:/ban-hang", "Số lượng nhập không hợp lệ, vui lòng nhập lại!");
+                }
+            }catch (NumberFormatException e){
+                throw new NumberFormatException("Quantity must be integer");
+            }
+
+        }
+        if (allParams.get("idKhachHang") == null || allParams.get("idKhachHang").isBlank()) {
+            return new ValidationResult(false, "redirect:/ban-hang", "Vui lòng chọn khách hàng!");
+        } else {
+            KhachHang kh = khachHangService.findById(Integer.parseInt(allParams.get("idKhachHang"))).data;
+            if (kh == null) {
+                return new ValidationResult(false, "redirect:/ban-hang", "KH not found!");
+            }
+        }
+        return new ValidationResult(true, null, null);
+    }
+
+    private void updateCart(String[] selectedSP, Map<String, String> allParams) {
         if (this.cart.mapSanPham == null) {
             this.cart.mapSanPham = new HashMap<>();
-        }else {
+        } else {
             this.cart.mapSanPham.clear();
         }
         for (String productId : selectedSP) {
             int id = Integer.parseInt(productId);
             String sl = allParams.get("soLuongs[" + id + "]");
             int quantity = sl.isBlank() ? 0 : Integer.parseInt(sl);
-
             if (quantity > 0) {
                 this.cart.getMapSanPham().put(id, quantity);
             }
         }
-        if(cart.mapSanPham.isEmpty()){
-            red.addFlashAttribute("cart", cart);
-            red.addFlashAttribute("mess", "Vui lòng nhập đầy đủ thông tin số lượng sản phẩm cần bán!");
-            return "redirect:/ban-hang";
-        }
+    }
 
-        String idKH = allParams.get("idKhachHang");
-        if(idKH == null || idKH.isBlank()){
-            red.addFlashAttribute("cart", cart);
-            red.addFlashAttribute("mess", "Vui lòng chọn khách hàng!");
-            return "redirect:/ban-hang";
-        }
-        Integer idKhachHang = Integer.parseInt(idKH);
-        this.cart.setIdKhachHang(idKhachHang);
-        this.cart.setIdNhanVien(currentUser().getId());
-
+    private void prepareModelForView(Model model) {
         model.addAttribute("ngayMuaHang", LocalDate.now());
         model.addAttribute("khachHang", khachHangService.findById(cart.idKhachHang).data);
         model.addAttribute("nhanVien", currentUser());
@@ -133,9 +168,14 @@ public class BanHangController {
         Map<SanPhamChiTiet, Integer> listSP = sanPhamChiTietService.listSPInCart(cart.getMapSanPham());
         model.addAttribute("listSP", listSP);
         model.addAttribute("amount", service.getAmount(listSP));
-
-        return "banhang/pay";
     }
+
+    private String handleError(RedirectAttributes red, Cart cart, String message, String redirectUrl) {
+        red.addFlashAttribute("cart", cart);
+        red.addFlashAttribute("mess", message);
+        return redirectUrl;
+    }
+
 
     @PostMapping("/pay")
     public String pay(Model model, RedirectAttributes red) {

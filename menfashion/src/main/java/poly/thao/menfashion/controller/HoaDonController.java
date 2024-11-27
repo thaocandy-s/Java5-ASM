@@ -6,8 +6,10 @@ import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,9 +50,6 @@ public class HoaDonController {
     private HoaDonService service;
 
     @Autowired
-    private HoaDonChiTietService hoaDonChiTietService;
-
-    @Autowired
     private KhachHangService khachHangService;
 
     @Autowired
@@ -62,22 +61,22 @@ public class HoaDonController {
     }
 
     @ModelAttribute("isAdmin")
-    private Boolean isAdmin(){
+    private Boolean isAdmin() {
         return AppService.isAdmin(AppService.currentUser);
     }
 
     @ModelAttribute("listKhachHang")
-    private List<KhachHang> getListKhachHang(){
+    private List<KhachHang> getListKhachHang() {
         return khachHangService.getList().data;
     }
 
     @ModelAttribute("listNhanVien")
-    private List<NhanVien> getListNhanVien(){
+    private List<NhanVien> getListNhanVien() {
         return nhanVienService.getList().data;
     }
 
     @ModelAttribute("listTongGia")
-    private List<Double> getListTongGia(){
+    private List<Double> getListTongGia() {
         return service.listTongGiaHD();
     }
 
@@ -91,12 +90,12 @@ public class HoaDonController {
             return "redirect:/loi";
         }
         List<HoaDon> list = service.getList().data;
-        if(!key.isBlank()) list = service.searchHoaDon(list, key);
+        if (!key.isBlank()) list = service.searchHoaDon(list, key);
         int totalPage = paginationUtil.getTotalPages(list, PageConstant.pageSize);
         list = paginationUtil.paginate(list, page, PageConstant.pageSize);
         PageInfo<HoaDon> listInfo = new PageInfo<HoaDon>(list, page, totalPage);
         Map<HoaDon, Double> map = new HashMap<>();
-        for (HoaDon hoaDon: list){
+        for (HoaDon hoaDon : list) {
             map.put(hoaDon, service.getTongGia(hoaDon.getId()));
         }
         model.addAttribute("listInfo", listInfo);
@@ -107,9 +106,9 @@ public class HoaDonController {
     }
 
     @GetMapping("/chi-tiet/{id}")
-    public String hienThiChiTietHoaDon(@PathVariable("id") Integer id, Model model){
+    public String hienThiChiTietHoaDon(@PathVariable("id") Integer id, Model model) {
         HoaDon hd = service.findById(id).data;
-        List<HoaDonChiTiet> listHoaDonChiTiet = hoaDonChiTietService.repository.findAllByHoaDon_Id(id);
+        List<HoaDonChiTiet> listHoaDonChiTiet = service.getListHDCTByHoaDonId(id);
         HoaDonResponse hoaDonResponse = new HoaDonResponse(listHoaDonChiTiet, service.getTongGia(id));
 
         model.addAttribute("data", hoaDonResponse);
@@ -138,14 +137,14 @@ public class HoaDonController {
     @PostMapping("/update")
     public String sua(HoaDonReq hoaDonReq, Model model, RedirectAttributes red) {
         ResponseObject<HoaDonReq> data;
-        if(hoaDonReq.idKhachHang == null || hoaDonReq.idNhanVien == null){
+        if (hoaDonReq.idKhachHang == null || hoaDonReq.idNhanVien == null) {
             data = new ResponseObject<HoaDonReq>(true, hoaDonReq, "Vui lòng chọn khách hàng và nhân viên");
             return "redirect:" + MappingConstant.API_HOA_DON + "/update/" + hoaDonReq.getId();
         }
         HoaDon hd = service.findById(hoaDonReq.id).data;
         hd.setKhachHang(khachHangService.findById(hoaDonReq.idKhachHang).data);
         hd.setNhanVien(nhanVienService.findById(hoaDonReq.idNhanVien).data);
-        ResponseObject<HoaDon> rpHD= service.update(hd);
+        ResponseObject<HoaDon> rpHD = service.update(hd);
         data = new ResponseObject<>(true, hoaDonReq, rpHD.message);
         red.addFlashAttribute("rp", data);
         if (rpHD.isHasError) {
@@ -158,12 +157,17 @@ public class HoaDonController {
     // Method để export hóa đơn thành PDF
     @GetMapping("/chi-tiet/pdf/{id}")
     public void exportToPDF(@PathVariable("id") Integer id, HttpServletResponse response) throws DocumentException, IOException {
+        ResponseObject<String> validateIdHoaDon = validateIdHoaDon(id);
+        if (validateIdHoaDon.isHasError){
+            response.sendError(HttpStatus.BAD_REQUEST.value());
+            return;
+        }
         response.setContentType("application/pdf");
         String headerKey = "Content-Disposition";
         String headerValue = "attachment; filename=hoa_don_" + id + ".pdf";
         response.setHeader(headerKey, headerValue);
 
-        List<HoaDonChiTiet> listHoaDonChiTiet = hoaDonChiTietService.repository.findAllByHoaDon_Id(id);
+        List<HoaDonChiTiet> listHoaDonChiTiet = service.getListHDCTByHoaDonId(id);
         HoaDonResponse hoaDonResponse = new HoaDonResponse(listHoaDonChiTiet, service.getTongGia(id));
 
         // Tạo tài liệu PDF
@@ -210,6 +214,35 @@ public class HoaDonController {
         document.add(table);
 
         document.close();
+    }
+
+
+    public ResponseObject<String> validateIdHoaDon(Object idOb) {
+        try {
+            if (idOb == null) {
+                return new ResponseObject<>(true, "", "Id must not null");
+            }
+            String id = idOb.toString();
+            System.out.println(id);
+            if (!id.matches("^-?\\d+$")) {
+                return new ResponseObject<>(true, "", "Id must be Integer");
+            }
+            if (Integer.parseInt(id) <= 0) {
+                return new ResponseObject<>(true, "", "Invalid Id");
+            }
+            if (!service.isExistById(Integer.parseInt(id))) {
+                return new ResponseObject<>(true, "", "Id not found");
+            }
+            List<HoaDonChiTiet> listHDCT = service.getListHDCTByHoaDonId(Integer.parseInt(id));
+            if (listHDCT.isEmpty()) {
+                return new ResponseObject<>(true, "", "list HDCT empty");
+            }
+        } catch (NumberFormatException ex) {
+            return new ResponseObject<>(true, "", "Invalid Id");
+        } catch (RuntimeException ex) {
+            return new ResponseObject<>(true, "", "Server error");
+        }
+        return new ResponseObject<>(false, "", "Id hoa don OK");
     }
 
 }
