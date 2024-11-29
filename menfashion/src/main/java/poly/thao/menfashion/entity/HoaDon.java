@@ -52,4 +52,10 @@ public class HoaDon implements Serializable {
     @Enumerated(EnumType.ORDINAL)
     private EntityStatus trangThai;
 
+    public HoaDon(Integer id, NhanVien nhanVien, KhachHang khachHang, LocalDateTime ngayMuaHang) {
+        this.id = id;
+        this.nhanVien = nhanVien;
+        this.khachHang = khachHang;
+        this.ngayMuaHang = ngayMuaHang;
+    }
 }

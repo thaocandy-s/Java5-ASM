@@ -31,9 +31,7 @@ public class HoaDonService implements Service<HoaDon> {
         return new ResponseObject<List<HoaDon>>(false, this.repository.findAll(), "Lấy danh sách HD thành công");
     }
 
-    public List<Double> listTongGiaHD() {
-        return this.repository.listTongGiaHoaDon();
-    }
+
 
     public List<HoaDon> searchHoaDon(List<HoaDon> list, String key) {
         List<HoaDon> listHD = new ArrayList<>();
@@ -52,15 +50,16 @@ public class HoaDonService implements Service<HoaDon> {
         return listHD;
     }
 
-    public Double getTongGia(Integer id){
-        return repository.getTongGiaByHoaDonId(id);
-    }
+
 
     @Override
     public ResponseObject<HoaDon> add(HoaDon e) {
         try {
             if (e.getKhachHang() == null) {
                 return new ResponseObject<HoaDon>(true, e, "Khách hàng không hợp lệ");
+            }
+            if (e.getKhachHang().getTen().isEmpty()){
+                return new ResponseObject<HoaDon>(true, e, "Tên Khách hàng không hợp lệ");
             }
             if (e.getNhanVien() == null) {
                 return new ResponseObject<HoaDon>(true, e, "Nhân viên không hợp lệ");
@@ -69,24 +68,39 @@ public class HoaDonService implements Service<HoaDon> {
             HoaDon hoaDon = this.repository.save(e);
             return new ResponseObject<HoaDon>(false, hoaDon, "Thêm HD thành công");
         } catch (Exception ex) {
-            return new ResponseObject<HoaDon>(true, e, "Thêm HD thất bại: " + ex.getMessage());
+            return new ResponseObject<HoaDon>(true, e, "Thêm HD thất bại");
         }
     }
 
     @Override
     public ResponseObject<HoaDon> update(HoaDon e) {
         try {
+
+            if (e== null) {
+                return new ResponseObject<>(true, e, "Hoa Don null");
+            }
             if (e.getId() == null) {
                 return new ResponseObject<>(true, e, "Không có Id HD hợp lệ");
+            }
+            for (HoaDon hd:repository.findAll()) {
+                if (hd.getId()== e.getId()){
+                    this.repository.save(e);
+                    return new ResponseObject<HoaDon>(false, e, "Sửa HD thành công");
+                }
             }
             if (e.getKhachHang() == null) {
                 return new ResponseObject<HoaDon>(true, e, "Khách hàng không hợp lệ");
             }
+            if (e.getKhachHang().getTen().isEmpty()){
+                return new ResponseObject<HoaDon>(true, e, "Tên Khách hàng không hợp lệ");
+            }
             if (e.getNhanVien() == null) {
                 return new ResponseObject<HoaDon>(true, e, "Nhân viên không hợp lệ");
             }
-            this.repository.save(e);
-            return new ResponseObject<HoaDon>(false, e, "Sửa HD thành công");
+            if (e.getNgayMuaHang()== null){
+                return new ResponseObject<HoaDon>(true, e, "Ngày mua hàng không hợp lệ");
+            }
+            return new ResponseObject<HoaDon>(true, e, "ID không tồn tại");
         } catch (Exception ex) {
             return new ResponseObject<HoaDon>(true, e, "Sửa HD thất bại: " + ex.getMessage());
         }
@@ -106,7 +120,12 @@ public class HoaDonService implements Service<HoaDon> {
         }
     }
 
-
+    public List<Double> listTongGiaHD() {
+        return this.repository.listTongGiaHoaDon();
+    }
+    public Double getTongGia(Integer id){
+        return repository.getTongGiaByHoaDonId(id);
+    }
     @Override
     public ResponseObject<HoaDon> findByCode(String code) {
         try {
