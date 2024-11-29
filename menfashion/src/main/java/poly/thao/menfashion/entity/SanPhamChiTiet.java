@@ -49,4 +49,6 @@ public class SanPhamChiTiet extends PrimaryEntity implements Serializable {
         this.soLuong = soLuong;
         this.donGia = donGia;
     }
+
+
 }

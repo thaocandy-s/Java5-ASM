@@ -1,6 +1,7 @@
 package poly.thao.menfashion.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import poly.thao.menfashion.entity.HoaDon;
 import poly.thao.menfashion.entity.KichThuoc;
 import poly.thao.menfashion.entity.MauSac;
@@ -9,7 +10,7 @@ import poly.thao.menfashion.entity.SanPhamChiTiet;
 import poly.thao.menfashion.model.EntityStatus;
 import poly.thao.menfashion.model.response.SanPhamChiTietDTO;
 import poly.thao.menfashion.model.response.ResponseObject;
-import poly.thao.menfashion.repository.SanPhamChiTietRepository;
+import poly.thao.menfashion.repository.*;
 import poly.thao.menfashion.service.base.Service;
 import poly.thao.menfashion.utils.helper.Helper;
 
@@ -19,18 +20,24 @@ import java.util.List;
 import java.util.Map;
 
 @org.springframework.stereotype.Service
+@Component
 public class SanPhamChiTietService implements Service<SanPhamChiTiet> {
 
-    @Autowired
-    private SanPhamChiTietRepository repository;
+    private final SanPhamChiTietRepository repository;
+    private final MauSacRepository mauSacRepository;
+    private final KichThuocRepository kichThuocRepository;
     private List<SanPhamChiTiet> list;
+    private SanPhamRepository sanPhamRepository;
 
-    public SanPhamChiTietService() {
+    public SanPhamChiTietService(SanPhamChiTietRepository repository, MauSacRepository mauSacRepository, KichThuocRepository kichThuocRepository) {
+        this.repository = repository;
+        this.mauSacRepository = mauSacRepository;
+        this.kichThuocRepository = kichThuocRepository;
         this.list = new ArrayList<>();
 
         KichThuocService KTser = new KichThuocService();
         MauSacService Mauser = new MauSacService();
-        SanPhamService SPser = new SanPhamService();
+        SanPhamService SPser = new SanPhamService(sanPhamRepository);
 
         list.add(new SanPhamChiTiet(1, "SPCT01", EntityStatus.ACTIVE, KTser.findById(1).data, Mauser.findById(2).data, SPser.findById(1).data, 20, 1000D));
         list.add(new SanPhamChiTiet(2, "SPCT02", EntityStatus.ACTIVE, KTser.findById(1).data, Mauser.findById(4).data, SPser.findById(2).data, 23, 1000D));
@@ -44,6 +51,8 @@ public class SanPhamChiTietService implements Service<SanPhamChiTiet> {
         list.add(new SanPhamChiTiet(10, "SPCT010", EntityStatus.ACTIVE, KTser.findById(6).data, Mauser.findById(1).data, SPser.findById(5).data, 20, 1000D));
 
     }
+
+
 
 
     @Override
@@ -86,6 +95,13 @@ public class SanPhamChiTietService implements Service<SanPhamChiTiet> {
             || e.getSoLuong() == null) {
                 return new ResponseObject<SanPhamChiTiet>(true, e, "Không được để trống các trường mã-đơn giá-số lượng");
             }
+            if (e.getMa().length() < 5 || e.getMa().length() > 10) {
+                return new ResponseObject<SanPhamChiTiet>(true, e, "Mã phải từ 5-10 kí tự");
+            }
+            if (e.getSoLuong() < 0 || e.getDonGia() < 0) {
+                return new ResponseObject<SanPhamChiTiet>(true, e, "So luong, don gia phai lon hon 0");
+            }
+
             if(Helper.isChuCoDau(e.getMa().trim())){
                 return new ResponseObject<SanPhamChiTiet>(true, e, "Mã chỉ chứa các chữ không dấu");
             }
@@ -221,6 +237,14 @@ public class SanPhamChiTietService implements Service<SanPhamChiTiet> {
             }
         }
         return list1;
+    }
+
+    public MauSac getMauSac (int id) {
+        return mauSacRepository.findById(id).get();
+    }
+
+    public KichThuoc getKichThuoc (int id) {
+        return kichThuocRepository.findById(id).get();
     }
 
     public String validate(SanPhamChiTiet e){

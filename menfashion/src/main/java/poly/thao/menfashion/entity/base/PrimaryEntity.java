@@ -35,7 +35,4 @@ public abstract class PrimaryEntity implements Serializable {
     @Column(name = "trang_thai")
     @Enumerated(EnumType.ORDINAL)
     private EntityStatus trangThai;
-
-
-
 }

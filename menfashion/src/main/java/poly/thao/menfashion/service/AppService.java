@@ -8,11 +8,10 @@ public class AppService {
     public static Boolean isAdmin(NhanVien nv){
         if(nv == null){
             return false;
-        }else if(nv.getTenDangNhap().equals("Thaocandy@") && nv.getMa().equals("admin01")){
+        }else if(nv.getTenDangNhap().equals("Hieu1197@") && nv.getMa().equals("NV1")){
             return true;
         }else {
             return false;
         }
     }
-
 }

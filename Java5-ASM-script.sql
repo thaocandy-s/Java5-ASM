@@ -1,3 +1,5 @@
+create database MEN_FASHION
+go
 use MEN_FASHION
 go
 
@@ -16,3 +18,6 @@ go
 alter table san_pham
     alter column ten nvarchar(50) null
 go
+
+insert into nhan_vien (trang_thai, mat_khau, ma, ten, ten_dang_nhap)
+values (1, 'admin', 'nv1', 'admin', 'admin');

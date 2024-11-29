@@ -1,6 +1,7 @@
 package poly.thao.menfashion.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import poly.thao.menfashion.entity.MauSac;
 import poly.thao.menfashion.entity.SanPham;
 import poly.thao.menfashion.model.EntityStatus;
@@ -13,13 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @org.springframework.stereotype.Service
+@Component
 public class SanPhamService implements Service<SanPham> {
 
-    @Autowired
-    private SanPhamRepository repository;
+
+    private final SanPhamRepository repository;
     private List<SanPham> list;
 
-    public SanPhamService() {
+    public SanPhamService(SanPhamRepository repository) {
+        this.repository = repository;
         this.list = new ArrayList<>();
         list.add(new SanPham(1, "SP001", EntityStatus.ACTIVE, "San Pham 1"));
         list.add(new SanPham(2, "SP002", EntityStatus.ACTIVE, "San Pham 2"));
@@ -51,6 +54,15 @@ public class SanPhamService implements Service<SanPham> {
     @Override
     public ResponseObject<SanPham> add(SanPham e) {
         try {
+            if(e.getMa() == null || e.getMa().isBlank()){
+                return new ResponseObject<SanPham>(true, e, "Mã không được trống");
+            }
+            if(e.getTen() == null || e.getTen().isBlank()){
+                return new ResponseObject<SanPham>(true, e, "Tên không được trống");
+            }
+            if (e.getMa().length() > 10) {
+                return new ResponseObject<SanPham>(true, e, "Mã sản phẩm 5 - 10 ký tự");
+            }
             String validate = validate(e);
             if(validate != null){
                 return new ResponseObject<>(true, e, validate);
@@ -59,6 +71,7 @@ public class SanPhamService implements Service<SanPham> {
             if(isExistMa){
                 return new ResponseObject<SanPham>(true, e, "Mã bị trùng");
             }
+
             this.repository.save(e);
             return new ResponseObject<SanPham>(false, e, "Thêm SP thành công");
         } catch (Exception ex) {
@@ -68,13 +81,24 @@ public class SanPhamService implements Service<SanPham> {
 
     @Override
     public ResponseObject<SanPham> update(SanPham e) {
+        if(e.getMa() == null || e.getMa().isBlank()){
+            return new ResponseObject<SanPham>(true, e, "Mã không được trống");
+        }
+        if(e.getMa().length() > 10){
+            return new ResponseObject<SanPham>(true, e, "Mã sản phẩm 5 - 10 ký tự");
+        }
         String validate = validate(e);
         if(validate != null){
             return new ResponseObject<>(true, e, validate);
         }
         boolean isExistMa = repository.existsByMa(e.getMa(), e.getId());
+
         if(isExistMa){
             return new ResponseObject<SanPham>(true, e, "Mã bị trùng");
+        }
+
+        if(e.getTen() == null || e.getTen().isBlank()){
+            return new ResponseObject<SanPham>(true, e, "Tên không được trống");
         }
         try {
             this.repository.save(e);
@@ -86,20 +110,53 @@ public class SanPhamService implements Service<SanPham> {
 
     @Override
     public ResponseObject<SanPham> findById(Integer id) {
+
         try {
             boolean  isExists = this.repository.existsById(id);
             if(isExists){
-                return new ResponseObject<SanPham>(false, this.repository.findById(id).orElse(null), "Lấy data SP thành công");
+                return new ResponseObject<SanPham>(false, this.repository.findById(id).get(), "Lấy data SP thành công");
             }else {
                 return new ResponseObject<SanPham>(true, null, "SP không tồn tại");
             }
         } catch (Exception ex) {
-            return new ResponseObject<SanPham>(true, null, "Lỗi: " + ex.getMessage());
+            return new ResponseObject<SanPham>(true, null, "Lấy SP không thành công");
+        }
+    }
+
+    public ResponseObject<SanPham> findById(long id){
+
+        if (id > Integer.MAX_VALUE || id < Integer.MIN_VALUE){
+            return new ResponseObject<SanPham>(true, null, "Id vượt quá giới hạn int");
+        }
+
+        if (id < 1) {
+            return new ResponseObject<SanPham>(true, null, "Id phải là số lớn hơn 0");
+        }
+
+        int idInt = (int) id;
+        try {
+            boolean  isExists = this.repository.existsById(idInt);
+            if(isExists){
+                return new ResponseObject<SanPham>(false, this.repository.findById(idInt).get(), "Lấy data SP thành công");
+            }else {
+                return new ResponseObject<SanPham>(true, null, "SP không tồn tại");
+            }
+        } catch (Exception ex) {
+            return new ResponseObject<SanPham>(true, null, "Lấy SP không thành công");
         }
     }
 
     @Override
     public ResponseObject<SanPham> findByCode(String code) {
+        if(code == null || code.isBlank()){
+            return new ResponseObject<SanPham>(true, null, "Mã không được trống");
+        }
+        if (code.length() > 10 || code.length() < 5) {
+            return new ResponseObject<SanPham>(true, null, "Mã phải từ 5 đến 10 kí tự");
+        }
+        if (!code.matches("^SP\\d{3,10}$")){
+            return new ResponseObject<SanPham>(true, null, "Mã không được chứa khoảng trắng và kí tự đặc biệt");
+        }
         try {
             for (SanPham o : this.repository.findAll()) {
                 if (o.getMa().equals(code)) {
@@ -117,7 +174,7 @@ public class SanPhamService implements Service<SanPham> {
         try {
             ResponseObject<SanPham> find = this.findById(id);
             if (find.isHasError) {
-                return new ResponseObject<Integer>(true, id, find.getMessage());
+                return new ResponseObject<Integer>(true, id, "Xóa không thành công");
             } else {
                 find.data.setTrangThai(EntityStatus.DELETED);
                 this.repository.save(find.data);
@@ -162,11 +219,11 @@ public class SanPhamService implements Service<SanPham> {
 
     public String validate(SanPham e){
 
-        String regexMa = "^SP\\d{3}$";
+        String regexMa = "^SP\\d{3,10}$";
         String regexTen = "^[a-zA-ZÀ-ỹ\\s]{5,50}$";
 
         if(!e.getMa().matches(regexMa)){
-            return  "Mã sản phẩm 5 ký tự: SP+3 số bất kỳ";
+            return  "Mã sản phẩm 5 - 10 ký tự";
         }
         if(!e.getTen().matches(regexTen)){
             return  "Tên sản phẩm cần 5-50 ký tự, không số và ký tự đặc biệt";
