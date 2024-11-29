@@ -1,14 +1,12 @@
 package poly.thao.menfashion.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import poly.thao.menfashion.entity.HoaDon;
-import poly.thao.menfashion.entity.KichThuoc;
-import poly.thao.menfashion.entity.MauSac;
-import poly.thao.menfashion.entity.SanPham;
 import poly.thao.menfashion.entity.SanPhamChiTiet;
 import poly.thao.menfashion.model.EntityStatus;
 import poly.thao.menfashion.model.response.SanPhamChiTietDTO;
 import poly.thao.menfashion.model.response.ResponseObject;
+import poly.thao.menfashion.repository.KichThuocRepository;
+import poly.thao.menfashion.repository.MauSacRepository;
 import poly.thao.menfashion.repository.SanPhamChiTietRepository;
 import poly.thao.menfashion.service.base.Service;
 import poly.thao.menfashion.utils.helper.Helper;
@@ -23,13 +21,20 @@ public class SanPhamChiTietService implements Service<SanPhamChiTiet> {
 
     @Autowired
     private SanPhamChiTietRepository repository;
+
+    @Autowired
+    private KichThuocRepository kichThuocRepository;
+
+    @Autowired
+    private MauSacRepository mauSacRepository;
+
     private List<SanPhamChiTiet> list;
 
     public SanPhamChiTietService() {
         this.list = new ArrayList<>();
 
-        KichThuocService KTser = new KichThuocService();
-        MauSacService Mauser = new MauSacService();
+        KichThuocService KTser = new KichThuocService(kichThuocRepository);
+        MauSacService Mauser = new MauSacService(mauSacRepository);
         SanPhamService SPser = new SanPhamService();
 
         list.add(new SanPhamChiTiet(1, "SPCT01", EntityStatus.ACTIVE, KTser.findById(1).data, Mauser.findById(2).data, SPser.findById(1).data, 20, 1000D));

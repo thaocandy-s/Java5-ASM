@@ -1,7 +1,6 @@
 package poly.thao.menfashion.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import poly.thao.menfashion.entity.HoaDon;
+import org.springframework.stereotype.Component;
 import poly.thao.menfashion.entity.MauSac;
 import poly.thao.menfashion.model.EntityStatus;
 import poly.thao.menfashion.model.response.ResponseObject;
@@ -12,26 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @org.springframework.stereotype.Service
+@Component
 public class MauSacService implements Service<MauSac> {
 
-    @Autowired
-    private MauSacRepository repository;
+    public final MauSacRepository repository;
     private List<MauSac> list;
 
-    public MauSacService() {
-        this.list = new ArrayList<>();
-        list.add(new MauSac(1, "MS001", EntityStatus.ACTIVE, "MAU 1"));
-        list.add(new MauSac(2, "MS002", EntityStatus.ACTIVE, "MAU 2"));
-        list.add(new MauSac(3, "MS003", EntityStatus.ACTIVE, "MAU 3"));
-        list.add(new MauSac(4, "MS004", EntityStatus.ACTIVE, "MAU 4"));
-        list.add(new MauSac(5, "MS005", EntityStatus.ACTIVE, "MAU 5"));
-        list.add(new MauSac(6, "MS006", EntityStatus.ACTIVE, "MAU 6"));
-        list.add(new MauSac(7, "MS007", EntityStatus.ACTIVE, "MAU 7"));
-        list.add(new MauSac(8, "MS008", EntityStatus.ACTIVE, "MAU 8"));
-
+    public MauSacService(MauSacRepository repository) {
+        this.repository = repository;
     }
-
-
 
     @Override
     public ResponseObject<List<MauSac>> getList() {
@@ -43,11 +31,11 @@ public class MauSacService implements Service<MauSac> {
     public ResponseObject<MauSac> add(MauSac e) {
         try {
             String validate = validate(e);
-            if(validate != null){
+            if (validate != null) {
                 return new ResponseObject<>(true, e, validate);
             }
             boolean isExistMa = repository.existsByMa(e.getMa());
-            if(isExistMa){
+            if (isExistMa) {
                 return new ResponseObject<MauSac>(true, e, "Mã bị trùng");
             }
             this.repository.save(e);
@@ -60,11 +48,11 @@ public class MauSacService implements Service<MauSac> {
     @Override
     public ResponseObject<MauSac> update(MauSac e) {
         String validate = validate(e);
-        if(validate != null){
+        if (validate != null) {
             return new ResponseObject<>(true, e, validate);
         }
         boolean isExistMa = repository.existsByMa(e.getMa(), e.getId());
-        if(isExistMa){
+        if (isExistMa) {
             return new ResponseObject<MauSac>(true, e, "Mã bị trùng");
         }
         try {
@@ -78,10 +66,10 @@ public class MauSacService implements Service<MauSac> {
     @Override
     public ResponseObject<MauSac> findById(Integer id) {
         try {
-            boolean  isExists = this.repository.existsById(id);
-            if(isExists){
+            boolean isExists = this.repository.existsById(id);
+            if (isExists) {
                 return new ResponseObject<MauSac>(false, this.repository.findById(id).orElse(null), "Lấy data MS thành công");
-            }else {
+            } else {
                 return new ResponseObject<MauSac>(true, null, "MS không tồn tại");
             }
         } catch (Exception ex) {
@@ -139,23 +127,23 @@ public class MauSacService implements Service<MauSac> {
         List<MauSac> listMS = new ArrayList<>();
         key = key.toLowerCase();
         for (MauSac e : list) {
-            if (e.getMa().toLowerCase().contains(key) || e.getTen().toLowerCase().contains(key)){
+            if (e.getMa().toLowerCase().contains(key) || e.getTen().toLowerCase().contains(key)) {
                 listMS.add(e);
             }
         }
         return listMS;
     }
 
-    public String validate(MauSac e){
+    public String validate(MauSac e) {
 
         String regexMa = "^MS\\d{3}$";
-        String regexTen = "^[a-zA-ZÀ-ỹ\\s]{3,30}$";
+        String regexTen = "^[a-zA-ZÀ-ỹ\\s]{2,10}$";
 
-        if(!e.getMa().matches(regexMa)){
-            return  "Mã màu sắc cần 5 ký tự: MS+3 số bất kỳ";
+        if (!e.getMa().matches(regexMa)) {
+            return "Mã màu sắc cần 5 ký tự: MS+3 số bất kỳ";
         }
-        if(!e.getTen().matches(regexTen)){
-            return  "Tên màu sắc cần 3-30 ký tự, không số và ký tự đặc biệt";
+        if (!e.getTen().matches(regexTen)) {
+            return "Tên màu sắc cần 2-10 ký tự, không số và ký tự đặc biệt";
         }
         return null;
     }

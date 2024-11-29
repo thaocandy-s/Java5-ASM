@@ -1,6 +1,6 @@
 package poly.thao.menfashion.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import poly.thao.menfashion.entity.KichThuoc;
 import poly.thao.menfashion.model.EntityStatus;
 import poly.thao.menfashion.model.response.ResponseObject;
@@ -11,26 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @org.springframework.stereotype.Service
+@Component
 public class KichThuocService implements Service<KichThuoc> {
-
-    @Autowired
-    private KichThuocRepository repository;
+    private final KichThuocRepository repository;
     private List<KichThuoc> list;
 
-    public KichThuocService() {
-        this.list = new ArrayList<>();
-        list.add(new KichThuoc(1, "KT001", EntityStatus.ACTIVE, "KICH THUOC 1"));
-        list.add(new KichThuoc(2, "KT002", EntityStatus.ACTIVE, "KICH THUOC 2"));
-        list.add(new KichThuoc(3, "KT003", EntityStatus.ACTIVE, "KICH THUOC 3"));
-        list.add(new KichThuoc(4, "KT004", EntityStatus.ACTIVE, "KICH THUOC 4"));
-        list.add(new KichThuoc(5, "KT005", EntityStatus.ACTIVE, "KICH THUOC 5"));
-        list.add(new KichThuoc(6, "KT006", EntityStatus.ACTIVE, "KICH THUOC 6"));
-        list.add(new KichThuoc(7, "KT007", EntityStatus.ACTIVE, "KICH THUOC 7"));
-        list.add(new KichThuoc(8, "KT008", EntityStatus.ACTIVE, "KICH THUOC 8"));
-
+    public KichThuocService(KichThuocRepository repository) {
+        this.repository = repository;
     }
-
-
 
     @Override
     public ResponseObject<List<KichThuoc>> getList() {
@@ -148,13 +136,13 @@ public class KichThuocService implements Service<KichThuoc> {
     public String validate(KichThuoc e){
 
         String regexMa = "^KT\\d{3}$";
-        String regexTen = "^[a-zA-ZÀ-ỹ\\s]{3,30}$";
+        String regexTen = "^[a-zA-ZÀ-ỹ\\s]{2,10}$";
 
         if(!e.getMa().matches(regexMa)){
             return  "Mã kích thước cần 5 ký tự: KT+3 số bất kỳ";
         }
         if(!e.getTen().matches(regexTen)){
-            return  "Tên kích thước cần 3-30 ký tự, không số và ký tự đặc biệt";
+            return  "Tên kích thước cần 2-10 ký tự, không số và ký tự đặc biệt";
         }
         return null;
     }

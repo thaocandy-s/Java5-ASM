@@ -1,5 +1,6 @@
 package poly.thao.menfashion.service;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import poly.thao.menfashion.entity.NhanVien;
 import poly.thao.menfashion.model.EntityStatus;
@@ -22,7 +23,7 @@ public class NhanVienService implements Service<NhanVien> {
 
     public NhanVienService() {
         this.list = new ArrayList<>();
-        list.add(new NhanVien(1, "NV001", "Nhan Vien 001", "nhanvien001", "123", EntityStatus.ACTIVE));
+        list.add(new NhanVien(1, "NV001", "Nhan Vien 001", "nhanvien001S$", "MK123@", EntityStatus.ACTIVE));
         list.add(new NhanVien(2, "NV002", "Nhan Vien 002", "nhanvien002", "123", EntityStatus.ACTIVE));
         list.add(new NhanVien(3, "NV003", "Nhan Vien 003", "nhanvien003", "123", EntityStatus.DELETED));
         list.add(new NhanVien(4, "NV004", "Nhan Vien 004", "nhanvien004", "123", EntityStatus.ACTIVE));
@@ -33,6 +34,10 @@ public class NhanVienService implements Service<NhanVien> {
         list.add(new NhanVien(9, "NV009", "Nhan Vien 009", "nhanvien009", "123", EntityStatus.DELETED));
     }
 
+    @PostConstruct
+    public void fakeDataNhanVien(){
+        repository.saveAll(list);
+    }
 
     @Override
     public ResponseObject<List<NhanVien>> getList() {
