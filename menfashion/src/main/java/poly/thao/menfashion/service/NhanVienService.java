@@ -1,6 +1,7 @@
 package poly.thao.menfashion.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import poly.thao.menfashion.entity.NhanVien;
 import poly.thao.menfashion.model.EntityStatus;
 import poly.thao.menfashion.model.request.LoginReq;
@@ -16,11 +17,12 @@ import java.util.Optional;
 public class NhanVienService implements Service<NhanVien> {
 
     @Autowired
-    public NhanVienRepository repository;
+    public final NhanVienRepository repository;
 
     private List<NhanVien> list;
 
-    public NhanVienService() {
+    public NhanVienService(NhanVienRepository repository) {
+        this.repository = repository;
         this.list = new ArrayList<>();
         list.add(new NhanVien(1, "NV001", "Nhan Vien 001", "nhanvien001", "123", EntityStatus.ACTIVE));
         list.add(new NhanVien(2, "NV002", "Nhan Vien 002", "nhanvien002", "123", EntityStatus.ACTIVE));

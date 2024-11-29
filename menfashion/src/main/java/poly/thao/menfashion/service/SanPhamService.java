@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @org.springframework.stereotype.Service
-@Component
 public class SanPhamService implements Service<SanPham> {
 
 

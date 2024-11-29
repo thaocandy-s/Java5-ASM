@@ -1,6 +1,7 @@
 package poly.thao.menfashion.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import poly.thao.menfashion.entity.HoaDon;
@@ -20,16 +21,27 @@ import java.util.Map;
 public class BanHangService {
 
     @Autowired
-    private KhachHangService khachHangService;
+    private final KhachHangService khachHangService;
 
     @Autowired
-    private SanPhamChiTietService sanPhamChiTietService;
+    private final SanPhamChiTietService sanPhamChiTietService;
 
     @Autowired
-    private HoaDonService hoaDonService;
+    private final HoaDonService hoaDonService;
 
     @Autowired
-    private HoaDonChiTietService hoaDonChiTietService;
+    private final HoaDonChiTietService hoaDonChiTietService;
+
+    @Autowired
+    private final NhanVienService nhanVienService;
+
+    public BanHangService(KhachHangService khachHangService, SanPhamChiTietService sanPhamChiTietService, HoaDonService hoaDonService, HoaDonChiTietService hoaDonChiTietService, NhanVienService nhanVienService) {
+        this.khachHangService = khachHangService;
+        this.sanPhamChiTietService = sanPhamChiTietService;
+        this.hoaDonService = hoaDonService;
+        this.hoaDonChiTietService = hoaDonChiTietService;
+        this.nhanVienService = nhanVienService;
+    }
 
     public Double getAmount(Map<SanPhamChiTiet, Integer> mapSP){
         Double amount = 0D;
@@ -42,10 +54,30 @@ public class BanHangService {
 
     @Transactional(rollbackFor = Exception.class)
     public ResponseObject<String> pay(Cart cart) {
-        try {
-            NhanVien nv = AppService.currentUser;
-            KhachHang kh = khachHangService.findById(cart.idKhachHang).data;
 
+        if (cart.getIdNhanVien() == null) {
+            return new ResponseObject<>(true, null, "Không có thông tin nhân viên");
+        } else if (cart.getIdNhanVien() <= 0) {
+            return new ResponseObject<>(true, null, "Id nhân viên phải lớn hơn 0");
+        }
+        if (cart.getIdKhachHang() == null) {
+            return new ResponseObject<>(true, null, "Không có thông tin khách hàng");
+        } else if (cart.getIdKhachHang() <= 0) {
+            return new ResponseObject<>(true, null, "Id khách hàng phải lớn hơn 0");
+        }
+        if (cart.getMapSanPham().isEmpty()) {
+            return new ResponseObject<>(true, null, "Không có thông tin sản phẩm");
+        }
+
+        try {
+            NhanVien nv = nhanVienService.findById(cart.getIdNhanVien()).data;
+            KhachHang kh = khachHangService.findById(cart.idKhachHang).data;
+            if (nv == null) {
+                return new ResponseObject<>(true, null, "Không có thông tin nhân viên");
+            }
+            if (kh == null) {
+                return new ResponseObject<>(true, null, "Không có thông tin khách hàng");
+            }
             HoaDon hoaDon = new HoaDon();
             hoaDon.setNhanVien(nv);
             hoaDon.setKhachHang(kh);

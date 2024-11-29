@@ -139,6 +139,7 @@ public class BanHangController {
 
     @PostMapping("/pay")
     public String pay(Model model, RedirectAttributes red) {
+
         if (currentUser() == null) {
             return "redirect:/loi";
         }

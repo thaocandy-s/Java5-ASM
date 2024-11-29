@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 @org.springframework.stereotype.Service
-@Component
 public class SanPhamChiTietService implements Service<SanPhamChiTiet> {
 
     private final SanPhamChiTietRepository repository;

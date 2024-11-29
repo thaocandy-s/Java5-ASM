@@ -1,6 +1,7 @@
 package poly.thao.menfashion.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import poly.thao.menfashion.entity.KhachHang;
 import poly.thao.menfashion.entity.KichThuoc;
 import poly.thao.menfashion.entity.SanPham;
@@ -17,11 +18,12 @@ import java.util.List;
 public class KhachHangService implements Service<KhachHang> {
 
     @Autowired
-    public KhachHangRepository repository;
+    public final KhachHangRepository repository;
 
     private List<KhachHang> list;
 
-    public KhachHangService() {
+    public KhachHangService(KhachHangRepository repository) {
+        this.repository = repository;
         this.list = new ArrayList<>();
         list.add(new KhachHang(1, "KH001", EntityStatus.ACTIVE, "Khach hang 1", "0123456789"));
         list.add(new KhachHang(2, "KH002", EntityStatus.ACTIVE, "Khach hang 2", "0123456789"));
