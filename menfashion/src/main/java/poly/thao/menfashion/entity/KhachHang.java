@@ -33,4 +33,5 @@ public class KhachHang extends PrimaryEntity implements Serializable {
         this.soDienThoai = soDienThoai;
     }
 
+
 }

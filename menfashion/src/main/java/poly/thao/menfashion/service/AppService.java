@@ -8,7 +8,7 @@ public class AppService {
     public static Boolean isAdmin(NhanVien nv){
         if(nv == null){
             return false;
-        }else if(nv.getTenDangNhap().equals("Thaocandy@") && nv.getMa().equals("admin01")){
+        }else if(nv.getTenDangNhap().equals("Miatran@") && nv.getMa().equals("admin01")){
             return true;
         }else {
             return false;
