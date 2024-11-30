@@ -177,21 +177,11 @@ public class Thao_BH_HoanTatThanhToanTest {
     }
 
     @Test
-    void saveInvoice10_Successfully() {
-        HoaDon mockHoaDon = new HoaDon();
-        mockHoaDon.setId(100);
-        when(khachHangService.findById(validCart.idKhachHang))
-                .thenReturn(new ResponseObject<>(false, null, ""));
-        when(nhanVienService.findById(validCart.idNhanVien))
-                .thenReturn(new ResponseObject<>(false, null, ""));
-        when(hoaDonService.add(any(HoaDon.class)))
-                .thenReturn(new ResponseObject<>(false, mockHoaDon, "OK"));
-        when(hoaDonChiTietService.add(any(HoaDonChiTiet.class)))
-                .thenReturn(new ResponseObject<>(false, null, "OK"));
+    void saveInvoice10_IdNhanVienEqualLowBoundaryLess1() {
+        validCart.idKhachHang = 0;
         ResponseObject<String> result = paymentService.pay(validCart);
-
-        assertFalse(result.isHasError);
-        assertEquals("Thanh toán thành công.", result.getMessage());
+        assertTrue(result.isHasError);
+        assertTrue(result.getMessage().contains("invalid idKhachHang"));
     }
 
 
